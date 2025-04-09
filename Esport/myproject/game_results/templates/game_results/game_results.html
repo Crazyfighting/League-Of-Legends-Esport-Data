@@ -1,0 +1,40 @@
+<!-- game_results/templates/game_results/game_results.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Results</title>
+</head>
+<body>
+    <h1>Game Results</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Tournament</th>
+                <th>Team1</th>
+                <th>Team2</th>
+                <th>Champion</th>
+                <th>Role</th>
+                <th>Player</th>
+                <th>Winner</th>
+                <th>Player Image</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for game in game_data %}
+                <tr>
+                    <td>{{ game.Tournament }}</td>
+                    <td>{{ game.Team1 }}</td>
+                    <td>{{ game.Team2 }}</td>
+					<td><img src="{{ game.Champion }}" alt="Champion" style="width: 200px; height: 200px; object-fit: cover;"></td>
+                    <td>{{ game.Role }}</td>
+                    <td>{{ game.Player }}</td>
+                    <td>{{ game.Winner }}</td>
+                    <td><img src="{{ game.PlayerImage }}" alt="Player Image" style="width: 200px; height: 200px; object-fit: cover;"></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
