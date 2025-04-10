@@ -124,15 +124,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# 添加 WhiteNoise 中間件
-MIDDLEWARE = [
-    # 確保它在所有其他中間件後面添加，但在 security 和 session 中間件之後
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # 添加這行
-    # 其他中間件...
-]
-
 # 設置靜態文件存儲
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
