@@ -12,18 +12,35 @@ def game_results(request):
     # 建立 Client
     site = EsportsClient("lol")
 
-    # 執行查詢，將比賽名稱添加到查詢條件中
+    # 先查詢特定頁面底下的比賽 RiotPlatformGameId
+    page_to_query = "Data:2023 Mid-Season Invitational"
+    game_id_response = site.cargo_client.query(
+        tables="MatchScheduleGame=MSG,MatchSchedule=MS",
+        fields="MSG.RiotPlatformGameId",
+        where='MSG._pageName="%s" AND MSG.RiotPlatformGameId IS NOT NULL' % page_to_query,
+        join_on="MSG.MatchId=MS.MatchId",
+        order_by="MS.N_Page, MS.N_MatchInPage, MSG.N_GameInMatch",
+        limit=20
+    )
+
+    riot_game_ids = [f'"{g["RiotPlatformGameId"]}"' for g in game_id_response]
+    if not riot_game_ids:
+        return render(request, 'game_results/game_results.html', {'game_data': []})
+
+    game_id_filter = f"SG.RiotPlatformGameId IN ({','.join(riot_game_ids)})"
+
+    # 查詢對應的比賽資料
     response = site.cargo_client.query(
         tables="ScoreboardGames=SG, ScoreboardPlayers=SP, Players=P",
         join_on="SG.GameId=SP.GameId, SP.Link=P.OverviewPage",
         fields="SG.Tournament, SG.Team1, SG.Team2, SP.Champion, SP.Role, P.Player=Player, SG.Winner",
-        where='SG._pageName="Data:2023 Mid-Season Invitational"'
+        where=f"{game_id_filter} AND SG.DateTime_UTC >= '{date} 00:00:00' AND SG.DateTime_UTC <= '{date + dt.timedelta(days=1)} 00:00:00'"
     )
 
     # 數據處理
     game_data = []
     if response:
-        for game in response:  # 獲取多場比賽的資料
+        for game in response:
             player = game['Player']
             s = EsportsClient("lol")
             r = s.cargo_client.query(
@@ -42,15 +59,15 @@ def game_results(request):
                     "Tournament": game["Tournament"],
                     "Team1": game["Team1"],
                     "Team2": game["Team2"],
-                    "Champion": 'https://ddragon.leagueoflegends.com/cdn/15.4.1/img/champion/' + game["Champion"] + '.png',
+                    "Champion": f'https://ddragon.leagueoflegends.com/cdn/15.4.1/img/champion/{game["Champion"]}.png',
                     "Role": game["Role"],
                     "Player": game["Player"],
                     "Winner": game["Winner"],
-                    "PlayerImage": url  # 圖片的 URL
+                    "PlayerImage": url
                 })
 
-    # 返回到模板並顯示
     return render(request, 'game_results/game_results.html', {'game_data': game_data})
+
 
 def get_filename_url_to_open(site: EsportsClient, filename, player, width=None):
     response = site.client.api(
@@ -64,11 +81,4 @@ def get_filename_url_to_open(site: EsportsClient, filename, player, width=None):
 
     image_info = next(iter(response["query"]["pages"].values()))["imageinfo"][0]
 
-    if width:
-        url = image_info["thumburl"]
-    else:
-        url = image_info["url"]
-
-    # 下載圖片到本地，並返回圖片路徑
-    image_path = f"{player}.png"
-    return url
+    return image_info["thumburl"] if width else image_info["url"]
