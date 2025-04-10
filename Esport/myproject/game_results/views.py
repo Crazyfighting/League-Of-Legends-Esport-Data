@@ -17,7 +17,7 @@ def game_results(request):
         tables="ScoreboardGames=SG, ScoreboardPlayers=SP, Players=P",
         join_on="SG.GameId=SP.GameId, SP.Link=P.OverviewPage",
         fields="SG.Tournament, SG.Team1, SG.Team2, SP.Champion, SP.Role, P.Player=Player, SG.Winner",
-        where=f"SG.Tournament='LCK 2025 Rounds 1-2' AND SG.DateTime_UTC >= '{date} 00:00:00' AND SG.DateTime_UTC <= '{date + dt.timedelta(days=1)} 00:00:00'"
+        where='SG._pageName="Data:2023 Mid-Season Invitational"'
     )
 
     # 數據處理
