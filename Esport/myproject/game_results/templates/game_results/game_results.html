@@ -1,40 +1,140 @@
-<!-- game_results/templates/game_results/game_results.html -->
+{% load custom_filters %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Results</title>
+    <title>LOL Worlds Cup</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+		}
+		table {
+			border-collapse: collapse;
+			width: 100%;
+			margin-bottom: 20px;
+		}
+		th, td {
+			border: 1px solid #ddd;
+			padding: 8px;
+			text-align: center;
+			vertical-align: middle;
+		}
+		th {
+			background-color: #f2f2f2;
+		}
+		.tournament-header {
+			font-weight: bold;
+			font-size: 1.2em;
+			background-color: #f2f2f2;
+			text-align: left;
+			padding: 8px;
+			border: 1px solid #ddd;
+		}
+		.team-name {
+			font-weight: bold;
+		}
+		.player-img, .champion-img {
+			height: 60px;
+			width: 60px;
+			object-fit: contain;
+			margin: 0 auto;
+			display: block;
+		}
+		.winner {
+			background-color: #e8f5e9;
+		}
+		.winner-text {
+			font-weight: bold;
+			color: #2e7d32;
+		}
+		.team-header {
+			font-size: 1.1em;
+			font-weight: bold;
+			min-width: 150px; /* 添加這一行，設定最小寬度 */
+		}
+	</style>
 </head>
 <body>
-    <h1>Game Results</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Tournament</th>
-                <th>Team1</th>
-                <th>Team2</th>
-                <th>Champion</th>
-                <th>Role</th>
-                <th>Player</th>
-                <th>Winner</th>
-                <th>Player Image</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for game in game_data %}
-                <tr>
-                    <td>{{ game.Tournament }}</td>
-                    <td>{{ game.Team1 }}</td>
-                    <td>{{ game.Team2 }}</td>
-					<td><img src="{{ game.Champion }}" alt="Champion" style="width: 200px; height: 200px; object-fit: cover;"></td>
-                    <td>{{ game.Role }}</td>
-                    <td>{{ game.Player }}</td>
-                    <td>{{ game.Winner }}</td>
-                    <td><img src="{{ game.PlayerImage }}" alt="Player Image" style="width: 200px; height: 200px; object-fit: cover;"></td>
-                </tr>
+    <h1>LOL Worlds Cup 2024</h1>
+    
+    {% for match in matches %}
+    <div class="tournament-header">{{ match.Tournament }}</div>
+    <table>
+        <tr>
+            <th class="team-header {% if match.Winner == match.Team1 %}winner{% endif %}" rowspan="3">
+                {{ match.Team1 }}
+                {% if match.Winner == '1' %}<span class="winner-text"> (勝)</span>{% endif %}
+            </th>
+            <th>Top</th>
+            <th>Jungle</th>
+            <th>Mid</th>
+            <th>Bot</th>
+            <th>Support</th>
+            
+            <th class="team-header {% if match.Winner == match.Team2 %}winner{% endif %}" rowspan="3">
+                {{ match.Team2 }}
+                {% if match.Winner == '2' %}<span class="winner-text"> (勝)</span>{% endif %}
+            </th>
+            <th>Top</th>
+            <th>Jungle</th>
+            <th>Mid</th>
+            <th>Bot</th>
+            <th>Support</th>
+        </tr>
+        
+        <tr>
+            {% for role in role_order %}
+                <td>
+                    {% with player=match.Players1_by_role|get_item:role %}
+                        {% if player %}
+                            <img class="player-img" src="{{ player.image }}" alt="{{ player.name }}">
+                        {% else %}
+                            -
+                        {% endif %}
+                    {% endwith %}
+                </td>
             {% endfor %}
-        </tbody>
+            
+            {% for role in role_order %}
+                <td>
+                    {% with player=match.Players2_by_role|get_item:role %}
+                        {% if player %}
+                            <img class="player-img" src="{{ player.image }}" alt="{{ player.name }}">
+                        {% else %}
+                            -
+                        {% endif %}
+                    {% endwith %}
+                </td>
+            {% endfor %}
+        </tr>
+        
+        <tr>
+            {% for role in role_order %}
+                <td>
+                    {% with player=match.Players1_by_role|get_item:role %}
+                        {% if player %}
+                            <img class="champion-img" src="{% static player.champion %}" alt="{{ player.role }}">
+                        {% else %}
+                            -
+                        {% endif %}
+                    {% endwith %}
+                </td>
+            {% endfor %}
+            
+            {% for role in role_order %}
+                <td>
+                    {% with player=match.Players2_by_role|get_item:role %}
+                        {% if player %}
+                            <img class="champion-img" src="{% static player.champion %}" alt="{{ player.role }}">
+                        {% else %}
+                            -
+                        {% endif %}
+                    {% endwith %}
+                </td>
+            {% endfor %}
+        </tr>
     </table>
+    {% endfor %}
 </body>
 </html>
