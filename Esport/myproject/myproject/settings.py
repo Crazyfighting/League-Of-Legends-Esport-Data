@@ -28,7 +28,7 @@ DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = []
 if not DEBUG:
-    ALLOWED_HOSTS.extend(['your-app-name.onrender.com', '.onrender.com'])
+    ALLOWED_HOSTS.extend(['*.onrender.com'])
 
 
 # Application definition
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -136,7 +137,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # settings.py
 
 # 設置靜態文件存儲
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
