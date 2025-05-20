@@ -21,14 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-br(%n2(ir6w$98m+tw#%pgw8t(fi#zl09#dxl_jcd-ylu-x^d9'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-br(%n2(ir6w$98m+tw#%pgw8t(fi#zl09#dxl_jcd-ylu-x^d9')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = []
 if not DEBUG:
-    ALLOWED_HOSTS.extend(['*.onrender.com'])
+    ALLOWED_HOSTS.extend(['league-of-legends-esport-data.onrender.com', '.onrender.com'])
 
 
 # Application definition

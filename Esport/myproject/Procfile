@@ -1,1 +1,1 @@
-web: gunicorn myproject.wsgi --timeout 60
+web: cd Esport/myproject && gunicorn myproject.wsgi:application --timeout 60
