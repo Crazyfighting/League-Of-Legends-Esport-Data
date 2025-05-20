@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: leaguepedia-parser
+Version: 2.0.2
+Summary: A parser for Leaguepedia data
+Home-page: https://github.com/mrtolkien/leaguepedia_parser
+License: MIT
+Author: Tolki
+Author-email: gary.mialaret@gmail.com
+Requires-Python: >=3.8,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: lol-dto (>=2.0.0,<3.0.0)
+Requires-Dist: lol-id-tools (>=2.0.0,<3.0.0)
+Requires-Dist: mwclient (>=0.10.1,<0.11.0)
+Requires-Dist: mwrogue (>=0.1.0,<0.2.0)
+Project-URL: Repository, https://github.com/mrtolkien/leaguepedia_parser

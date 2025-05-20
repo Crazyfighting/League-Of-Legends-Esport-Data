@@ -122,11 +122,18 @@ USE_TZ = True
 
 # settings.py
 
-STATIC_URL = '/static/'  # 用於訪問靜態檔案的 URL 前綴
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # 設定靜態檔案的根目錄
+    os.path.join(BASE_DIR, 'static'),
 ]
 
+# 確保這些目錄存在
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# settings.py
 
 # 設置靜態文件存儲
 #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

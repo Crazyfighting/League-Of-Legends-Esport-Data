@@ -4,137 +4,699 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>LOL Worlds Cup</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-		}
-		table {
-			border-collapse: collapse;
-			width: 100%;
-			margin-bottom: 20px;
-		}
-		th, td {
-			border: 1px solid #ddd;
-			padding: 8px;
-			text-align: center;
-			vertical-align: middle;
-		}
-		th {
-			background-color: #f2f2f2;
-		}
-		.tournament-header {
-			font-weight: bold;
-			font-size: 1.2em;
-			background-color: #f2f2f2;
-			text-align: left;
-			padding: 8px;
-			border: 1px solid #ddd;
-		}
-		.team-name {
-			font-weight: bold;
-		}
-		.player-img, .champion-img {
-			height: 60px;
-			width: 60px;
-			object-fit: contain;
-			margin: 0 auto;
-			display: block;
-		}
-		.winner {
-			background-color: #e8f5e9;
-		}
-		.winner-text {
-			font-weight: bold;
-			color: #2e7d32;
-		}
-		.team-header {
-			font-size: 1.1em;
-			font-weight: bold;
-			min-width: 150px; /* 添加這一行，設定最小寬度 */
-		}
-	</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOL Worlds Cup 2024</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #4285f4;
+            --background-color: #0a0a0a;
+            --card-background: #1a1a1a;
+            --text-color: #ffffff;
+            --border-color: #333333;
+            --winner-color: #34a853;
+            --stage-color: #fbbc04;
+            --gold-color: #FFD700;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.1) 0%, rgba(66, 133, 244, 0.1) 100%);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            color: var(--gold-color);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .stage-section {
+            margin-bottom: 40px;
+        }
+
+        .stage-header {
+            background-color: var(--stage-color);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.3em;
+            font-weight: 500;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+
+        .match-group {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .match-group-header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 12px 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .match-card {
+            background-color: var(--card-background);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px;
+        }
+
+        .match-card:last-child {
+            border-bottom: none;
+        }
+
+        .game-header {
+            color: var(--primary-color);
+            font-size: 1.1em;
+            font-weight: 500;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .teams-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .team {
+            flex: 1;
+            text-align: center;
+        }
+
+        .team-name {
+            font-size: 1.2em;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .team-name.winner {
+            color: var(--winner-color);
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .player-slot {
+            text-align: center;
+        }
+
+        .player-img, .champion-img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+
+        .player-name {
+            font-size: 0.9em;
+            color: var(--text-color);
+            margin-top: 5px;
+        }
+
+        .vs {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .teams-container {
+                flex-direction: column;
+            }
+            
+            .players-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .match-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 20px;
+            background-color: rgba(26, 26, 26, 0.9);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            contain: content;
+        }
+
+        .team1-column, .team2-column {
+            width: 50%;
+            padding: 20px;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .team1-column {
+            background-image: var(--team1-image);
+            background-color: rgba(0, 0, 0, 0.7);
+            background-blend-mode: overlay;
+        }
+
+        .team2-column {
+            background-image: var(--team2-image);
+            background-color: rgba(0, 0, 0, 0.7);
+            background-blend-mode: overlay;
+        }
+
+        .team1-column.winner, .team2-column.winner {
+            border: 3px solid var(--gold-color);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            position: relative;
+        }
+
+        .team-name.winner {
+            color: var(--gold-color);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* 最後一局的特效 */
+        .team1-column.winner-animate, .team2-column.winner-animate {
+            border: 3px solid var(--gold-color);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            position: relative;
+            animation: final-bg-flash 3s ease-in-out infinite;
+            will-change: filter, box-shadow;
+            background-blend-mode: overlay;
+        }
+
+        .team-name.winner-animate {
+            color: var(--gold-color);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            animation: final-winner-glow 3s ease-in-out infinite;
+            will-change: text-shadow, color;
+        }
+
+        @keyframes final-bg-flash {
+            0% {
+                filter: brightness(1);
+                box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            }
+            50% {
+                filter: brightness(1.2);
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            }
+            100% {
+                filter: brightness(1);
+                box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            }
+        }
+
+        @keyframes final-winner-glow {
+            0% {
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+                color: var(--gold-color);
+            }
+            50% {
+                text-shadow: 0 0 25px rgba(255, 215, 0, 0.9);
+                color: #FFE44D;
+            }
+            100% {
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+                color: var(--gold-color);
+            }
+        }
+
+        .tab-content:not(.active) .team1-column.winner-animate,
+        .tab-content:not(.active) .team2-column.winner-animate {
+            animation: none !important;
+            border-color: var(--gold-color);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            filter: brightness(1);
+        }
+
+        .tab-content:not(.active) .team-name.winner-animate {
+            animation: none !important;
+            color: var(--gold-color);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .winner-animate .player-info {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            animation: final-player-info 3s ease-in-out infinite;
+        }
+
+        .winner-animate .player-info:hover {
+            transform: translateX(5px) scale(1.02);
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        @keyframes final-player-info {
+            0%, 100% {
+                border-color: rgba(255, 215, 0, 0.3);
+                background: rgba(0, 0, 0, 0.7);
+            }
+            50% {
+                border-color: rgba(255, 215, 0, 0.5);
+                background: rgba(0, 0, 0, 0.75);
+            }
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            contain: content;
+            position: relative;
+            z-index: 1;
+        }
+
+        .player-info:hover {
+            transform: translateX(5px) scale(1.02);
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .champion-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            margin-right: 15px;
+            border: 2px solid var(--gold-color);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .rune-image {
+            width: 35px;
+            height: 35px;
+            border-radius: 17.5px;
+            margin-right: 10px;
+            border: 2px solid var(--gold-color);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .summoner-spell-image {
+            width: 30px;
+            height: 30px;
+            margin-right: 5px;
+        }
+
+        .spells-container {
+            display: flex;
+            align-items: center;
+            margin: 0 20px;
+            min-width: 100px;
+            justify-content: center;
+        }
+
+        .kda-info {
+            color: white;
+            padding-right: 10px;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .player-details {
+            flex-grow: 1;
+            min-width: 120px;
+        }
+
+        .player-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .player-role {
+            font-size: 16px;
+            color: #cccccc;
+        }
+
+        .match-header {
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+            border-bottom: 2px solid var(--gold-color);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .winner {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+            contain: content;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-buttons {
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 20px;
+            background: rgba(42, 42, 42, 0.8);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .tab-button-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .tab-button-row:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 215, 0, 0.3) 20%, 
+                rgba(255, 215, 0, 0.3) 80%, 
+                transparent 100%
+            );
+        }
+
+        .tab-button {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            min-width: 140px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .tab-button:hover {
+            background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .tab-button:hover::before {
+            left: 100%;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000000;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30%;
+            height: 3px;
+            background: #FFD700;
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* 為不同階段的按鈕添加不同樣式 */
+        .tab-button-row:first-child .tab-button {
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .tab-button-row:nth-child(2) .tab-button {
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            border: 1px solid rgba(66, 133, 244, 0.2);
+        }
+
+        .tab-button-row:last-child .tab-button {
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            border: 1px solid rgba(52, 168, 83, 0.2);
+        }
+
+        .tab-button-row:first-child .tab-button:hover {
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+
+        .tab-button-row:nth-child(2) .tab-button:hover {
+            border-color: rgba(66, 133, 244, 0.4);
+        }
+
+        .tab-button-row:last-child .tab-button:hover {
+            border-color: rgba(52, 168, 83, 0.4);
+        }
+
+        .tab-button-row:first-child .tab-button.active {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        }
+
+        .tab-button-row:nth-child(2) .tab-button.active {
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+        }
+
+        .tab-button-row:last-child .tab-button.active {
+            background: linear-gradient(135deg, #34a853 0%, #4285f4 100%);
+        }
+
+        .winner-score {
+            color: #FFD700;
+        }
+        
+        .loser-score {
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
-    <h1>LOL Worlds Cup 2024</h1>
-    
-    {% for match in matches %}
-    <div class="tournament-header">{{ match.Tournament }}</div>
-    <table>
-        <tr>
-            <th class="team-header {% if match.Winner == match.Team1 %}winner{% endif %}" rowspan="3">
-                {{ match.Team1 }}
-                {% if match.Winner == '1' %}<span class="winner-text"> (勝)</span>{% endif %}
-            </th>
-            <th>Top</th>
-            <th>Jungle</th>
-            <th>Mid</th>
-            <th>Bot</th>
-            <th>Support</th>
+    <div class="container">
+        <div class="header">
+            <h1>LOL Worlds Cup 2024</h1>
+        </div>
+
+        <div class="tab-buttons">
+            <div class="tab-button-row">
+                <button class="tab-button" onclick="showTab('Finals')">決賽</button>
+                <button class="tab-button" onclick="showTab('SemiFinals')">四強</button>
+                <button class="tab-button" onclick="showTab('QuarterFinals')">八強</button>
+            </div>
+            <div class="tab-button-row">
+                <button class="tab-button" onclick="showTab('MainEvent Round 1')">瑞士輪 Round 1</button>
+                <button class="tab-button" onclick="showTab('MainEvent Round 2')">瑞士輪 Round 2</button>
+                <button class="tab-button" onclick="showTab('MainEvent Round 3')">瑞士輪 Round 3</button>
+                <button class="tab-button" onclick="showTab('MainEvent Round 4')">瑞士輪 Round 4</button>
+                <button class="tab-button" onclick="showTab('MainEvent Round 5')">瑞士輪 Round 5</button>
+            </div>
+            <div class="tab-button-row">
+                <button class="tab-button" onclick="showTab('PlayIn')">入圍賽</button>
+            </div>
+        </div>
+
+        {% for tab in matches %}
+            {% ifchanged tab.Tab %}
+            <div id="{{ tab.Tab }}" class="tab-content">
+                {% for match in matches %}
+                    {% if match.Tab == tab.Tab %}
+                    <table class="match-table" style="--team1-image: url('{{ match.Team1Image }}'); --team2-image: url('{{ match.Team2Image }}');">
+                        <tr>
+                            <td colspan="2" class="match-header">
+                                {{ match.Tournament }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="background:#222; text-align:center; font-size:24px; font-weight:bold; border-bottom:1px solid #FFD700;" class="{% if match.WinnerTeam == match.Team1 %}winner-score{% else %}loser-score{% endif %}">{{ match.Team1Points }}</td>
+                            <td style="background:#222; text-align:center; font-size:24px; font-weight:bold; border-bottom:1px solid #FFD700;" class="{% if match.WinnerTeam == match.Team2 %}winner-score{% else %}loser-score{% endif %}">{{ match.Team2Points }}</td>
+                        </tr>
+                        <tr>
+                            <td class="team1-column {% if match.WinnerTeam == match.Team1 and match.use_animation %}winner-animate{% elif match.WinnerTeam == match.Team1 %}winner{% endif %}">
+                                <div class="team-name {% if match.WinnerTeam == match.Team1 and match.use_animation %}winner-animate{% elif match.WinnerTeam == match.Team1 %}winner{% endif %}">
+                                    {{ match.Team1 }}
+                                </div>
+                                {% for role in role_order %}
+                                    {% if role in match.Players1_by_role %}
+                                        {% with player=match.Players1_by_role|get_item:role %}
+                                        <div class="player-info">
+                                            <img src="{{ player.champion }}" alt="{{ player.champion }}" class="champion-image">
+                                            <div class="player-details">
+                                                <div class="player-name">
+                                                    {{ player.name|split:" "|first }}
+                                                </div>
+                                                <div class="player-role">{{ role }}</div>
+                                            </div>
+                                            <div class="spells-container">
+                                                <img src="{{ player.rune }}" alt="Rune" class="rune-image">
+                                                {% for spell in player.summoner_spells %}
+                                                    <img src="{{ spell }}" alt="Summoner Spell" class="summoner-spell-image">
+                                                {% endfor %}
+                                            </div>
+                                            <div class="kda-info">
+                                                {{ player.kills }}/{{ player.deaths }}/{{ player.assists }}
+                                            </div>
+                                        </div>
+                                        {% endwith %}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td class="team2-column {% if match.WinnerTeam == match.Team2 and match.use_animation %}winner-animate{% elif match.WinnerTeam == match.Team2 %}winner{% endif %}">
+                                <div class="team-name {% if match.WinnerTeam == match.Team2 and match.use_animation %}winner-animate{% elif match.WinnerTeam == match.Team2 %}winner{% endif %}">
+                                    {{ match.Team2 }}
+                                </div>
+                                {% for role in role_order %}
+                                    {% if role in match.Players2_by_role %}
+                                        {% with player=match.Players2_by_role|get_item:role %}
+                                        <div class="player-info">
+                                            <img src="{{ player.champion }}" alt="{{ player.champion }}" class="champion-image">
+                                            <div class="player-details">
+                                                <div class="player-name">
+                                                    {{ player.name|split:" "|first }}
+                                                </div>
+                                                <div class="player-role">{{ role }}</div>
+                                            </div>
+                                            <div class="spells-container">
+                                                <img src="{{ player.rune }}" alt="Rune" class="rune-image">
+                                                {% for spell in player.summoner_spells %}
+                                                    <img src="{{ spell }}" alt="Summoner Spell" class="summoner-spell-image">
+                                                {% endfor %}
+                                            </div>
+                                            <div class="kda-info">
+                                                {{ player.kills }}/{{ player.deaths }}/{{ player.assists }}
+                                            </div>
+                                        </div>
+                                        {% endwith %}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    </table>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endifchanged %}
+        {% endfor %}
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // 隱藏所有標籤內容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
             
-            <th class="team-header {% if match.Winner == match.Team2 %}winner{% endif %}" rowspan="3">
-                {{ match.Team2 }}
-                {% if match.Winner == '2' %}<span class="winner-text"> (勝)</span>{% endif %}
-            </th>
-            <th>Top</th>
-            <th>Jungle</th>
-            <th>Mid</th>
-            <th>Bot</th>
-            <th>Support</th>
-        </tr>
-        
-        <tr>
-            {% for role in role_order %}
-                <td>
-                    {% with player=match.Players1_by_role|get_item:role %}
-                        {% if player %}
-                            <img class="player-img" src="{{ player.image }}" alt="{{ player.name }}">
-                        {% else %}
-                            -
-                        {% endif %}
-                    {% endwith %}
-                </td>
-            {% endfor %}
+            // 移除所有標籤按鈕的 active 類
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
             
-            {% for role in role_order %}
-                <td>
-                    {% with player=match.Players2_by_role|get_item:role %}
-                        {% if player %}
-                            <img class="player-img" src="{{ player.image }}" alt="{{ player.name }}">
-                        {% else %}
-                            -
-                        {% endif %}
-                    {% endwith %}
-                </td>
-            {% endfor %}
-        </tr>
-        
-        <tr>
-            {% for role in role_order %}
-                <td>
-                    {% with player=match.Players1_by_role|get_item:role %}
-                        {% if player %}
-                            <img class="champion-img" src="{% static player.champion %}" alt="{{ player.role }}">
-                        {% else %}
-                            -
-                        {% endif %}
-                    {% endwith %}
-                </td>
-            {% endfor %}
+            // 顯示選中的標籤內容
+            document.getElementById(tabName).classList.add('active');
             
-            {% for role in role_order %}
-                <td>
-                    {% with player=match.Players2_by_role|get_item:role %}
-                        {% if player %}
-                            <img class="champion-img" src="{% static player.champion %}" alt="{{ player.role }}">
-                        {% else %}
-                            -
-                        {% endif %}
-                    {% endwith %}
-                </td>
-            {% endfor %}
-        </tr>
-    </table>
-    {% endfor %}
+            // 為選中的按鈕添加 active 類
+            document.querySelector(`.tab-button[onclick="showTab('${tabName}')"]`).classList.add('active');
+        }
+
+        // 顯示第一個標籤
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstTab = document.querySelector('.tab-button');
+            if (firstTab) {
+                firstTab.click();
+            }
+        });
+    </script>
 </body>
 </html>
