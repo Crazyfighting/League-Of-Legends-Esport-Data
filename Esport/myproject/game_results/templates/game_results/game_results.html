@@ -138,7 +138,9 @@
         }
 
         .team-name.winner {
-            color: var(--winner-color);
+            color: var(--gold-color);
+            text-shadow: 0 0 12px #FFD700, 0 0 4px #fff, 0 0 24px #FFD700;
+            font-weight: bold;
         }
 
         .players-grid {
@@ -245,7 +247,7 @@
                 border-radius: 12px;
                 overflow: hidden;
                 box-sizing: border-box;
-                margin-bottom: 6px;
+                margin-bottom: 1px !important;
             }
 
             .team1-column, .team2-column {
@@ -331,6 +333,77 @@
                 line-height: 1.2;
             }
 
+            .match-header.long-title {
+                font-size: 18px;
+            }
+
+            .match-table-wrapper {
+                margin-bottom: -6px !important;
+            }
+            .table-scroll-x {
+                margin-bottom: 0 !important;
+                padding-bottom: 0 !important;
+            }
+            .team1-column {
+                background: linear-gradient(
+                    90deg,
+                    rgba(0,123,255,0.45) 0%,
+                    rgba(0,0,0,0.7) 100%
+                ), var(--team1-image);
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                border: none;
+                box-shadow: none;
+            }
+            .team2-column {
+                background: linear-gradient(
+                    90deg,
+                    rgba(220,53,69,0.45) 0%,
+                    rgba(0,0,0,0.7) 100%
+                ), var(--team2-image);
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                border: none;
+                box-shadow: none;
+            }
+            .team1-column.winner {
+                filter: brightness(1.15) saturate(1.2);
+                box-shadow: 0 0 16px 4px rgba(0,123,255,0.25);
+            }
+            .team2-column.winner {
+                filter: brightness(1.15) saturate(1.2);
+                box-shadow: 0 0 16px 4px rgba(220,53,69,0.25);
+            }
+            .team1-column .team-name.winner,
+            .team2-column .team-name.winner {
+                color: #FFD700;
+                text-shadow: 0 0 12px #FFD700, 0 0 4px #fff, 0 0 24px #FFD700;
+                font-weight: bold;
+            }
+            .team-name.winner-animate {
+                color: #FFD700 !important;
+                text-shadow: 0 0 18px #FFD700, 0 0 8px #fff, 0 0 32px #FFD700;
+                font-weight: bold;
+                animation: final-winner-glow 3s ease-in-out infinite !important;
+            }
+            .champion-image {
+                width: 45px;
+                height: 45px;
+                object-fit: cover;
+                border-radius: 50%;
+                box-shadow: 0 0 4px #FFD700;
+                background: #222;
+                padding: 2px;
+            }
+            .match-header {
+                font-size: 20px;
+                padding: 10px;
+                word-break: break-word;
+                white-space: normal;
+                line-height: 1.2;
+            }
             .match-header.long-title {
                 font-size: 18px;
             }
@@ -439,41 +512,20 @@
 
         /* 勝方加強效果 */
         .team1-column.winner {
-            background: linear-gradient(
-                90deg,
-                rgba(0,123,255,0.85) 0%,
-                rgba(0,0,0,0.7) 100%
-            ), var(--team1-image);
             filter: brightness(1.15) saturate(1.2);
-            /* 可加一點光暈 */
             box-shadow: 0 0 16px 4px rgba(0,123,255,0.25);
         }
 
         .team2-column.winner {
-            background: linear-gradient(
-                90deg,
-                rgba(220,53,69,0.85) 0%,
-                rgba(0,0,0,0.7) 100%
-            ), var(--team2-image);
             filter: brightness(1.15) saturate(1.2);
             box-shadow: 0 0 16px 4px rgba(220,53,69,0.25);
         }
 
-        .team1-column .team-name.winner {
-            color: #007bff;
-            text-shadow: 0 0 12px #007bff, 0 0 4px #fff;
-            font-weight: bold;
-        }
-
+        .team1-column .team-name.winner,
         .team2-column .team-name.winner {
-            color: #dc3545;
-            text-shadow: 0 0 12px #dc3545, 0 0 4px #fff;
+            color: #FFD700;
+            text-shadow: 0 0 12px #FFD700, 0 0 4px #fff, 0 0 24px #FFD700;
             font-weight: bold;
-        }
-
-        .team-name.winner {
-            color: var(--gold-color);
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         /* 最後一局的特效 */
@@ -487,10 +539,10 @@
         }
 
         .team-name.winner-animate {
-            color: var(--gold-color);
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            color: #FFD700 !important;
+            text-shadow: 0 0 18px #FFD700, 0 0 8px #fff, 0 0 32px #FFD700;
+            font-weight: bold;
             animation: final-winner-glow 3s ease-in-out infinite !important;
-            will-change: text-shadow, color;
         }
 
         @keyframes final-bg-flash {
