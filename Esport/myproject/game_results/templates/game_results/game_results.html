@@ -190,16 +190,21 @@
                 padding: 0;
                 margin: 0 0 5px 0;
             }
-            .tab-buttons, .tab-button-row {
-                width: 100vw;
-                margin: 0 auto;
+            .tab-buttons {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                width: 100%;
                 box-sizing: border-box;
-                gap: 2px;
-                padding: 0;
+                padding: 0 4px;
             }
+
             .tab-button-row {
-                flex-wrap: wrap;
+                display: flex;
+                flex-wrap: nowrap;
+                min-width: max-content;
+                gap: 2px;
             }
+
             .tab-button {
                 flex: 1 1 0;
                 min-width: 0;
@@ -211,18 +216,19 @@
                 box-sizing: border-box;
             }
             .table-scroll-x {
-                padding-left: 2vw;
-                padding-right: 2vw;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding: 0 2vw;
                 box-sizing: border-box;
             }
+
             .match-table {
-                width: 96vw;
-                max-width: 96vw;
-                margin: 0 auto;
+                width: 600px; /* 實際可顯示完整 team1 + team2 */
                 border: 2px solid #FFD700;
                 border-radius: 12px;
                 overflow: hidden;
             }
+
             .team1-column, .team2-column {
                 width: 50%;
                 min-width: 0;
