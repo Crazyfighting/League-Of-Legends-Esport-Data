@@ -253,8 +253,8 @@
                 box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
             }
             50% {
-                filter: brightness(1.2);
-                box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+                filter: brightness(1.4);
+                box-shadow: 0 0 40px rgba(255, 215, 0, 0.9);
             }
             100% {
                 filter: brightness(1);
@@ -268,8 +268,9 @@
                 color: var(--gold-color);
             }
             50% {
-                text-shadow: 0 0 25px rgba(255, 215, 0, 0.9);
+                text-shadow: 0 0 35px rgba(255, 215, 0, 1);
                 color: #FFE44D;
+                font-size: 1.1em;
             }
             100% {
                 text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
@@ -308,10 +309,13 @@
             0%, 100% {
                 border-color: rgba(255, 215, 0, 0.3);
                 background: rgba(0, 0, 0, 0.7);
+                transform: scale(1);
             }
             50% {
-                border-color: rgba(255, 215, 0, 0.5);
-                background: rgba(0, 0, 0, 0.75);
+                border-color: rgba(255, 215, 0, 0.8);
+                background: rgba(0, 0, 0, 0.8);
+                transform: scale(1.05);
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
             }
         }
 
@@ -690,8 +694,73 @@
             document.querySelector(`.tab-button[onclick="showTab('${tabName}')"]`).classList.add('active');
         }
 
-        // 顯示第一個標籤
+        // 處理圖片載入錯誤
+        function handleImageError(img, type) {
+            const src = img.src;
+            const basePath = src.substring(0, src.lastIndexOf('/') + 1);
+            const fileName = src.substring(src.lastIndexOf('/') + 1);
+            const nameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
+            const ext = fileName.substring(fileName.lastIndexOf('.'));
+            
+            // 使用 fetch 來檢查檔案是否存在
+            fetch(src)
+                .then(response => {
+                    if (!response.ok) {
+                        // 如果檔案不存在，嘗試使用不區分大小寫的方式尋找
+                        const files = Array.from(document.querySelectorAll('img'))
+                            .map(img => img.src)
+                            .filter(src => src.startsWith(basePath))
+                            .map(src => src.substring(src.lastIndexOf('/') + 1));
+                        
+                        // 尋找不區分大小寫的匹配
+                        const match = files.find(file => 
+                            file.toLowerCase() === fileName.toLowerCase()
+                        );
+                        
+                        if (match) {
+                            img.src = basePath + match;
+                        } else {
+                            // 如果找不到匹配的檔案，使用預設圖片
+                            if (type === 'champion') {
+                                img.src = '/static/champion/default.png';
+                            } else if (type === 'rune') {
+                                img.src = '/static/runes/default/default.png';
+                            } else if (type === 'spell') {
+                                img.src = '/static/summonerspells/default.png';
+                            }
+                        }
+                    }
+                })
+                .catch(() => {
+                    // 如果發生錯誤，使用預設圖片
+                    if (type === 'champion') {
+                        img.src = '/static/champion/default.png';
+                    } else if (type === 'rune') {
+                        img.src = '/static/runes/default/default.png';
+                    } else if (type === 'spell') {
+                        img.src = '/static/summonerspells/default.png';
+                    }
+                });
+        }
+
+        // 為所有圖片添加錯誤處理
         document.addEventListener('DOMContentLoaded', function() {
+            // 處理英雄圖片
+            document.querySelectorAll('.champion-image').forEach(img => {
+                img.onerror = () => handleImageError(img, 'champion');
+            });
+            
+            // 處理符文圖片
+            document.querySelectorAll('.rune-image').forEach(img => {
+                img.onerror = () => handleImageError(img, 'rune');
+            });
+            
+            // 處理召喚師技能圖片
+            document.querySelectorAll('.summoner-spell-image').forEach(img => {
+                img.onerror = () => handleImageError(img, 'spell');
+            });
+
+            // 顯示第一個標籤
             const firstTab = document.querySelector('.tab-button');
             if (firstTab) {
                 firstTab.click();

@@ -60,12 +60,18 @@ def clean_rune_name(rune_name):
 
 def get_summoner_spell_path(spell_name):
     """獲取召喚師技能圖片路徑"""
-    return f'/static/summonerspells/Summoner{spell_name}.png'
+    clean_spell = clean_rune_name(spell_name)
+    return f'/static/summonerspells/Summoner{clean_spell}.png'
 
 def get_rune_path(rune_name):
     """獲取符文圖片路徑"""
     clean_name = clean_rune_name(rune_name)
     return f'/static/runes/{clean_name}/{clean_name}.png'
+
+def get_champion_path(champion_name):
+    """獲取英雄圖片路徑"""
+    clean_name = clean_champion_name(champion_name)
+    return f'/static/champion/{clean_name}.png'
 
 # 用於記錄已經印過的標識
 printed_stages = set()
@@ -300,7 +306,7 @@ def game_results(request):
             
             match["Players1_by_role"][role] = {
                 "image": player_image_cache[player_name],
-                "champion": f'/static/champion/{champion}.png',
+                "champion": get_champion_path(champion),
                 "role": role,
                 "name": player_name,
                 "is_mvp": is_mvp,
@@ -318,7 +324,7 @@ def game_results(request):
             
             match["Players2_by_role"][role] = {
                 "image": player_image_cache[player_name],
-                "champion": f'/static/champion/{champion}.png',
+                "champion": get_champion_path(champion),
                 "role": role,
                 "name": player_name,
                 "is_mvp": is_mvp,
