@@ -190,76 +190,57 @@
                 padding: 0;
                 margin: 0 0 5px 0;
             }
-            .tab-buttons {
-                display: flex;
-                flex-direction: column;
-                gap: 5px;
-                padding: 8px;
-                margin-bottom: 10px;
-                width: 100vw;
+            .tab-buttons, .tab-button-row {
+                width: 90vw;
+                margin: 0 auto;
                 box-sizing: border-box;
-                overflow-x: unset;
-            }
-            .tab-button-row {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 5px;
-                width: 100vw;
-                box-sizing: border-box;
-                overflow-x: unset;
-                justify-content: stretch;
             }
             .tab-button {
-                flex: 1 1 90px;
-                font-size: 12px;
+                font-size: 11px;
                 padding: 4px 0;
-                min-width: 90px;
-                max-width: unset;
-                white-space: normal;
-                text-overflow: unset;
-                overflow: visible;
-                box-sizing: border-box;
             }
             .table-scroll-x {
-                padding-left: 6px;
-                padding-right: 6px;
+                padding-left: 5vw;
+                padding-right: 5vw;
+                box-sizing: border-box;
             }
             .match-table {
                 width: 100%;
                 max-width: 100%;
                 margin: 0 auto;
+                border: 2px solid #FFD700;
+                border-radius: 12px;
+                overflow: hidden;
             }
             .team1-column, .team2-column {
-                max-width: 50vw;
+                width: 50%;
                 min-width: 0;
-                width: 50vw;
-                padding: 1px;
+                padding: 2px;
                 font-size: 10px;
                 box-sizing: border-box;
                 word-break: break-all;
                 background-size: contain !important;
                 background-position: center !important;
             }
-            .player-info, .player-details, .kda-info {
-                max-width: 100%;
-                min-width: 0;
-                font-size: 10px;
-                overflow: visible !important;
-                text-overflow: unset !important;
-                white-space: normal !important;
-                display: block !important;
+            .player-info {
+                display: flex;
+                flex-direction: column !important;
+                align-items: flex-start;
+                gap: 2px;
+                padding: 4px 0;
+                margin-bottom: 2px;
+                background: rgba(0,0,0,0.5);
+                border-radius: 6px;
+            }
+            .player-details, .kda-info, .spells-container {
+                width: 100%;
+                font-size: 11px;
+                margin: 0;
+                padding: 0;
             }
             .spells-container {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 2px;
-                margin: 0;
-            }
-            .champion-image, .rune-image, .summoner-spell-image {
-                max-width: 18px;
-                max-height: 18px;
-                width: 18px;
-                height: 18px;
+                justify-content: flex-start;
+                margin-top: 2px;
             }
             .team-name {
                 font-size: 11px;
