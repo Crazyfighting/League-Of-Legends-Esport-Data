@@ -69,9 +69,15 @@ def get_rune_path(rune_name):
 
 # 用於記錄已經印過的標識
 printed_stages = set()
+# 用於快取已解析的階段
+stage_cache = {}
 
 def get_stage_from_gameid(game_id):
     """根據遊戲ID判斷比賽階段"""
+    # 如果已經快取過，直接返回
+    if game_id in stage_cache:
+        return stage_cache[game_id]
+
     game_id = game_id.lower()
     
     # 定義階段對應表
@@ -85,25 +91,23 @@ def get_stage_from_gameid(game_id):
         'playin': 'PlayIn'
     }
     
-    print(f"\n檢查遊戲ID: {game_id}")
-    
     # 先檢查是否為 Play-In
     if 'play-in' in game_id or 'playin' in game_id:
         stage = 'PlayIn'
-        print(f"匹配到 PlayIn")
         if stage not in printed_stages:
             print(f"找到 {stage}")
             printed_stages.add(stage)
+        stage_cache[game_id] = stage
         return stage
     
     # 檢查是否為 MainEvent Round
     round_match = re.search(r'round\s*(\d+)', game_id)
     if round_match:
         stage = f'MainEvent Round {round_match.group(1)}'
-        print(f"匹配到 MainEvent Round: {stage}")
         if stage not in printed_stages:
             print(f"找到 {stage}")
             printed_stages.add(stage)
+        stage_cache[game_id] = stage
         return stage
     
     # 檢查其他階段
@@ -112,18 +116,18 @@ def get_stage_from_gameid(game_id):
             # 確保 final 不會被 quarter 或 semi 覆蓋
             if key == 'final' and ('quarter' in game_id or 'semi' in game_id):
                 continue
-            print(f"匹配到階段 {key}: {stage}")
             if stage not in printed_stages:
                 print(f"找到 {stage}")
                 printed_stages.add(stage)
+            stage_cache[game_id] = stage
             return stage
     
     # 如果都沒有匹配到，返回 Unknown
     stage = 'Unknown'
-    print(f"未匹配到任何階段，返回: {stage}")
     if stage not in printed_stages:
         print(f"找到 {stage}")
         printed_stages.add(stage)
+    stage_cache[game_id] = stage
     return stage
 
 def game_results(request):
@@ -347,13 +351,14 @@ def game_results(request):
         # 找出該系列賽中 Game 編號最大的場次
         max_game = max(games, key=lambda m: m["GameNumber"])
         for m in games:
-            # 只有 Finals 的最後一場使用動畫效果
-            is_finals = m["Tab"] == "Finals"
+            # 使用 get_stage_from_gameid 來獲取階段
+            stage = get_stage_from_gameid(m["Tournament"])
             m["is_last_game_in_group"] = (m["GameNumber"] == max_game["GameNumber"])
-            m["use_animation"] = m["is_last_game_in_group"] and is_finals
+            # 只有 QuarterFinals、SemiFinals 和 Finals 的最後一場使用動畫效果
+            m["use_animation"] = m["is_last_game_in_group"] and stage in ["QuarterFinals", "SemiFinals", "Finals"]
             print(f"比賽: {m['Tournament']}")
             print(f"  Game編號: {m['GameNumber']}")
-            print(f"  階段: {m['Tab']}")
+            print(f"  階段: {stage}")
             print(f"  是否最後一場: {m['is_last_game_in_group']}")
             print(f"  是否使用動畫: {m['use_animation']}")
 

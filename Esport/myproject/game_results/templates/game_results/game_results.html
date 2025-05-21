@@ -235,7 +235,7 @@
             border: 3px solid var(--gold-color);
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
             position: relative;
-            animation: final-bg-flash 3s ease-in-out infinite;
+            animation: final-bg-flash 3s ease-in-out infinite !important;
             will-change: filter, box-shadow;
             background-blend-mode: overlay;
         }
@@ -243,7 +243,7 @@
         .team-name.winner-animate {
             color: var(--gold-color);
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            animation: final-winner-glow 3s ease-in-out infinite;
+            animation: final-winner-glow 3s ease-in-out infinite !important;
             will-change: text-shadow, color;
         }
 
@@ -277,16 +277,16 @@
             }
         }
 
+        /* 移除可能影響動畫的樣式 */
         .tab-content:not(.active) .team1-column.winner-animate,
         .tab-content:not(.active) .team2-column.winner-animate {
-            animation: none !important;
+            animation: final-bg-flash 3s ease-in-out infinite !important;
             border-color: var(--gold-color);
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-            filter: brightness(1);
         }
 
         .tab-content:not(.active) .team-name.winner-animate {
-            animation: none !important;
+            animation: final-winner-glow 3s ease-in-out infinite !important;
             color: var(--gold-color);
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
