@@ -179,12 +179,15 @@
                 padding: 10px;
                 width: 100%;
                 box-sizing: border-box;
+                overflow-x: hidden;
             }
 
             .match-table {
                 width: 100%;
                 table-layout: fixed;
                 word-wrap: break-word;
+                display: block;
+                overflow-x: auto;
             }
 
             .team1-column, .team2-column {
@@ -193,6 +196,7 @@
                 box-sizing: border-box;
                 padding: 10px;
                 display: table-cell;
+                vertical-align: top;
             }
 
             .player-info {
@@ -202,25 +206,11 @@
                 margin-bottom: 10px;
                 width: 100%;
                 box-sizing: border-box;
+                overflow: visible;
             }
 
-            .champion-image {
-                width: 40px;
-                height: 40px;
-                margin-right: 10px;
-                margin-bottom: 5px;
-            }
-
-            .rune-image {
-                width: 30px;
-                height: 30px;
-                margin-right: 8px;
-            }
-
-            .summoner-spell-image {
-                width: 25px;
-                height: 25px;
-                margin-right: 4px;
+            .player-info > * {
+                max-width: 100%;
             }
 
             .spells-container {
@@ -229,6 +219,7 @@
                 width: 100%;
                 justify-content: flex-start;
                 flex-wrap: wrap;
+                overflow: visible;
             }
 
             .kda-info {
@@ -237,53 +228,7 @@
                 width: 100%;
                 text-align: left;
                 margin-top: 5px;
-            }
-
-            .player-details {
-                min-width: auto;
-                width: 100%;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-
-            .player-name {
-                font-size: 16px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-
-            .player-role {
-                font-size: 14px;
-            }
-
-            .team-name {
-                font-size: 18px;
-                margin-bottom: 10px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-
-            /* 調整分數顯示 */
-            td[style*="font-size:24px"] {
-                font-size: 20px !important;
-                padding: 5px;
-            }
-
-            /* 確保表格不會溢出容器 */
-            .match-table {
-                max-width: 100%;
-                overflow-x: hidden;
-            }
-
-            /* 調整表格標題 */
-            .match-header {
-                font-size: 16px;
-                padding: 10px;
-                white-space: normal;
-                word-wrap: break-word;
+                overflow: visible;
             }
         }
 
@@ -856,29 +801,34 @@
                 .then(response => {
                     if (!response.ok) {
                         if (type === 'rune') {
-                            // 對於符文，獲取所有已載入的符文圖片路徑
-                            const runeImages = Array.from(document.querySelectorAll('.rune-image'))
-                                .map(img => img.src)
-                                .filter(src => src.startsWith('/static/runes/'));
+                            // 對於符文，直接嘗試不同的路徑組合
+                            const runeBasePath = '/static/runes/';
+                            const possiblePaths = [
+                                `${runeBasePath}${nameWithoutExt}/${nameWithoutExt}.png`,
+                                `${runeBasePath}${nameWithoutExt.toLowerCase()}/${nameWithoutExt.toLowerCase()}.png`,
+                                `${runeBasePath}${nameWithoutExt.toUpperCase()}/${nameWithoutExt.toUpperCase()}.png`,
+                                `${runeBasePath}${nameWithoutExt.charAt(0).toUpperCase() + nameWithoutExt.slice(1).toLowerCase()}/${nameWithoutExt.charAt(0).toUpperCase() + nameWithoutExt.slice(1).toLowerCase()}.png`
+                            ];
                             
-                            // 從路徑中提取資料夾名稱並進行不區分大小寫比對
-                            const match = runeImages.find(file => {
-                                const pathParts = file.split('/');
-                                const folderName = pathParts[4]; // 獲取資料夾名稱
-                                const fileName = pathParts[5]; // 獲取檔案名稱
-                                // 檢查資料夾名稱或檔案名稱是否包含目標名稱（不區分大小寫）
-                                return folderName.toLowerCase().includes(nameWithoutExt.toLowerCase()) ||
-                                       fileName.toLowerCase().includes(nameWithoutExt.toLowerCase());
-                            });
+                            // 嘗試每個可能的路徑
+                            const tryNextPath = (index) => {
+                                if (index >= possiblePaths.length) {
+                                    console.error(`找不到符文圖片: ${src}`);
+                                    return;
+                                }
+                                
+                                fetch(possiblePaths[index])
+                                    .then(response => {
+                                        if (response.ok) {
+                                            img.src = possiblePaths[index];
+                                        } else {
+                                            tryNextPath(index + 1);
+                                        }
+                                    })
+                                    .catch(() => tryNextPath(index + 1));
+                            };
                             
-                            if (match) {
-                                // 如果找到匹配的資料夾，使用該資料夾中的圖片
-                                const folderPath = match.substring(0, match.lastIndexOf('/') + 1);
-                                const matchedFileName = match.split('/').pop(); // 獲取匹配到的檔案名稱
-                                img.src = folderPath + matchedFileName;
-                            } else {
-                                console.error(`找不到符文圖片: ${src}`);
-                            }
+                            tryNextPath(0);
                         } else {
                             // 對於其他類型的圖片，使用一般的不區分大小寫比對
                             const files = Array.from(document.querySelectorAll('img'))
@@ -897,7 +847,6 @@
                     }
                 })
                 .catch(() => {
-                    // 移除預設圖片的使用
                     console.error(`Failed to load image: ${src}`);
                 });
         }
