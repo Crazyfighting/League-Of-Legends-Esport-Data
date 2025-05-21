@@ -179,23 +179,26 @@
                 padding: 10px;
                 width: 100%;
                 box-sizing: border-box;
-                overflow-x: hidden;
+                overflow-x: auto;
             }
 
             .match-table {
                 width: 100%;
+                min-width: 600px;
                 table-layout: fixed;
                 word-wrap: break-word;
                 display: block;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
+                margin: 0;
+                padding: 0;
             }
 
             .team1-column, .team2-column {
                 width: 50% !important;
-                min-width: 0;
+                min-width: 300px;
                 box-sizing: border-box;
-                padding: 10px;
+                padding: 5px;
                 display: table-cell;
                 vertical-align: top;
             }
@@ -203,8 +206,8 @@
             .player-info {
                 flex-direction: column;
                 align-items: flex-start;
-                padding: 10px;
-                margin-bottom: 10px;
+                padding: 5px;
+                margin-bottom: 5px;
                 width: 100%;
                 box-sizing: border-box;
                 overflow: visible;
@@ -215,7 +218,7 @@
             }
 
             .spells-container {
-                margin: 5px 0;
+                margin: 3px 0;
                 min-width: auto;
                 width: 100%;
                 justify-content: flex-start;
@@ -228,11 +231,10 @@
                 min-width: auto;
                 width: 100%;
                 text-align: left;
-                margin-top: 5px;
+                margin-top: 3px;
                 overflow: visible;
             }
 
-            /* 移除最小寬度限制 */
             .spells-container {
                 min-width: auto !important;
             }
@@ -243,6 +245,24 @@
 
             .player-details {
                 min-width: auto !important;
+            }
+
+            .match-table::-webkit-scrollbar {
+                height: 8px;
+            }
+
+            .match-table::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 4px;
+            }
+
+            .match-table::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 4px;
+            }
+
+            .match-table::-webkit-scrollbar-thumb:hover {
+                background: #555;
             }
         }
 
