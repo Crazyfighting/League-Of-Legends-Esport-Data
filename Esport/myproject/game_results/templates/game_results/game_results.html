@@ -706,27 +706,46 @@
             fetch(src)
                 .then(response => {
                     if (!response.ok) {
-                        // 如果檔案不存在，嘗試使用不區分大小寫的方式尋找
-                        const files = Array.from(document.querySelectorAll('img'))
-                            .map(img => img.src)
-                            .filter(src => src.startsWith(basePath))
-                            .map(src => src.substring(src.lastIndexOf('/') + 1));
-                        
-                        // 尋找不區分大小寫的匹配
-                        const match = files.find(file => 
-                            file.toLowerCase() === fileName.toLowerCase()
-                        );
-                        
-                        if (match) {
-                            img.src = basePath + match;
-                        } else {
-                            // 如果找不到匹配的檔案，使用預設圖片
-                            if (type === 'champion') {
-                                img.src = '/static/champion/default.png';
-                            } else if (type === 'rune') {
+                        if (type === 'rune') {
+                            // 對於符文，我們需要特別處理資料夾結構
+                            const runeBasePath = '/static/runes/';
+                            // 獲取所有已載入的符文圖片
+                            const runeImages = Array.from(document.querySelectorAll('.rune-image'))
+                                .map(img => img.src)
+                                .filter(src => src.startsWith(runeBasePath));
+                            
+                            // 尋找不區分大小寫的資料夾匹配
+                            const match = runeImages.find(file => {
+                                const folderName = file.split('/')[4]; // 獲取資料夾名稱
+                                return folderName.toLowerCase() === nameWithoutExt.toLowerCase();
+                            });
+                            
+                            if (match) {
+                                // 如果找到匹配的資料夾，使用該資料夾中的圖片
+                                const folderPath = match.substring(0, match.lastIndexOf('/') + 1);
+                                img.src = folderPath + nameWithoutExt + ext;
+                            } else {
                                 img.src = '/static/runes/default/default.png';
-                            } else if (type === 'spell') {
-                                img.src = '/static/summonerspells/default.png';
+                            }
+                        } else {
+                            // 對於其他類型的圖片，使用一般的不區分大小寫比對
+                            const files = Array.from(document.querySelectorAll('img'))
+                                .map(img => img.src)
+                                .filter(src => src.startsWith(basePath))
+                                .map(src => src.substring(src.lastIndexOf('/') + 1));
+                            
+                            const match = files.find(file => 
+                                file.toLowerCase() === fileName.toLowerCase()
+                            );
+                            
+                            if (match) {
+                                img.src = basePath + match;
+                            } else {
+                                if (type === 'champion') {
+                                    img.src = '/static/champion/default.png';
+                                } else if (type === 'spell') {
+                                    img.src = '/static/summonerspells/default.png';
+                                }
                             }
                         }
                     }
