@@ -695,6 +695,24 @@
         .loser-score {
             color: #ffffff;
         }
+
+        /* 新增 table-scroll-x 的 CSS */
+        @media (max-width: 768px) {
+            .table-scroll-x {
+                overflow-x: auto;
+                width: 100vw;
+                margin-left: -10px;
+                padding-bottom: 8px;
+            }
+            .match-table {
+                min-width: 350px;
+                width: max-content;
+                display: block;
+            }
+            .team1-column, .team2-column {
+                min-width: 160px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -726,6 +744,7 @@
             <div id="{{ tab.Tab }}" class="tab-content">
                 {% for match in matches %}
                     {% if match.Tab == tab.Tab %}
+                    <div class="table-scroll-x">
                     <table class="match-table" style="--team1-image: url('{{ match.Team1Image }}'); --team2-image: url('{{ match.Team2Image }}');">
                         <tr>
                             <td colspan="2" class="match-header">
@@ -797,6 +816,7 @@
                             </td>
                         </tr>
                     </table>
+                    </div>
                     {% endif %}
                 {% endfor %}
             </div>
