@@ -188,6 +188,7 @@
                 word-wrap: break-word;
                 display: block;
                 overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             .team1-column, .team2-column {
@@ -229,6 +230,19 @@
                 text-align: left;
                 margin-top: 5px;
                 overflow: visible;
+            }
+
+            /* 移除最小寬度限制 */
+            .spells-container {
+                min-width: auto !important;
+            }
+
+            .kda-info {
+                min-width: auto !important;
+            }
+
+            .player-details {
+                min-width: auto !important;
             }
         }
 
