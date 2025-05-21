@@ -175,12 +175,165 @@
         }
 
         @media (max-width: 768px) {
-            .teams-container {
-                flex-direction: column;
+            .container {
+                padding: 10px;
             }
-            
-            .players-grid {
-                grid-template-columns: repeat(3, 1fr);
+
+            .tab-buttons {
+                padding: 10px;
+            }
+
+            .tab-button-row {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .tab-button {
+                padding: 8px 15px;
+                min-width: auto;
+                font-size: 14px;
+            }
+
+            .match-table {
+                font-size: 14px;
+            }
+
+            .match-header {
+                font-size: 16px;
+                padding: 10px;
+            }
+
+            .team1-column, .team2-column {
+                padding: 10px;
+            }
+
+            .player-info {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .champion-image {
+                width: 40px;
+                height: 40px;
+                margin-right: 10px;
+                margin-bottom: 5px;
+            }
+
+            .rune-image {
+                width: 30px;
+                height: 30px;
+                margin-right: 8px;
+            }
+
+            .summoner-spell-image {
+                width: 25px;
+                height: 25px;
+                margin-right: 4px;
+            }
+
+            .spells-container {
+                margin: 5px 0;
+                min-width: auto;
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .kda-info {
+                padding-right: 0;
+                min-width: auto;
+                width: 100%;
+                text-align: left;
+                margin-top: 5px;
+            }
+
+            .player-details {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .player-name {
+                font-size: 16px;
+            }
+
+            .player-role {
+                font-size: 14px;
+            }
+
+            .team-name {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+
+            /* 調整分數顯示 */
+            td[style*="font-size:24px"] {
+                font-size: 20px !important;
+            }
+        }
+
+        /* 更小的螢幕 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 5px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab-button {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .match-table {
+                font-size: 12px;
+            }
+
+            .match-header {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .team1-column, .team2-column {
+                padding: 8px;
+            }
+
+            .player-info {
+                padding: 8px;
+            }
+
+            .champion-image {
+                width: 35px;
+                height: 35px;
+            }
+
+            .rune-image {
+                width: 25px;
+                height: 25px;
+            }
+
+            .summoner-spell-image {
+                width: 22px;
+                height: 22px;
+            }
+
+            .player-name {
+                font-size: 14px;
+            }
+
+            .player-role {
+                font-size: 12px;
+            }
+
+            .team-name {
+                font-size: 16px;
+            }
+
+            /* 調整分數顯示 */
+            td[style*="font-size:24px"] {
+                font-size: 18px !important;
             }
         }
 
