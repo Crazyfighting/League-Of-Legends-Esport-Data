@@ -800,49 +800,24 @@
             fetch(src)
                 .then(response => {
                     if (!response.ok) {
+                        // 統一使用小寫路徑
+                        const lowerPath = src.toLowerCase();
+                        const lowerBasePath = basePath.toLowerCase();
+                        const lowerFileName = fileName.toLowerCase();
+                        
                         if (type === 'rune') {
-                            // 對於符文，直接嘗試不同的路徑組合
+                            // 符文路徑：/static/runes/rune_name/rune_name.png
                             const runeBasePath = '/static/runes/';
-                            const possiblePaths = [
-                                `${runeBasePath}${nameWithoutExt}/${nameWithoutExt}.png`,
-                                `${runeBasePath}${nameWithoutExt.toLowerCase()}/${nameWithoutExt.toLowerCase()}.png`,
-                                `${runeBasePath}${nameWithoutExt.toUpperCase()}/${nameWithoutExt.toUpperCase()}.png`,
-                                `${runeBasePath}${nameWithoutExt.charAt(0).toUpperCase() + nameWithoutExt.slice(1).toLowerCase()}/${nameWithoutExt.charAt(0).toUpperCase() + nameWithoutExt.slice(1).toLowerCase()}.png`
-                            ];
-                            
-                            // 嘗試每個可能的路徑
-                            const tryNextPath = (index) => {
-                                if (index >= possiblePaths.length) {
-                                    console.error(`找不到符文圖片: ${src}`);
-                                    return;
-                                }
-                                
-                                fetch(possiblePaths[index])
-                                    .then(response => {
-                                        if (response.ok) {
-                                            img.src = possiblePaths[index];
-                                        } else {
-                                            tryNextPath(index + 1);
-                                        }
-                                    })
-                                    .catch(() => tryNextPath(index + 1));
-                            };
-                            
-                            tryNextPath(0);
-                        } else {
-                            // 對於其他類型的圖片，使用一般的不區分大小寫比對
-                            const files = Array.from(document.querySelectorAll('img'))
-                                .map(img => img.src)
-                                .filter(src => src.startsWith(basePath))
-                                .map(src => src.substring(src.lastIndexOf('/') + 1));
-                            
-                            const match = files.find(file => 
-                                file.toLowerCase() === fileName.toLowerCase()
-                            );
-                            
-                            if (match) {
-                                img.src = basePath + match;
-                            }
+                            const runePath = `${runeBasePath}${nameWithoutExt.toLowerCase()}/${nameWithoutExt.toLowerCase()}.png`;
+                            img.src = runePath;
+                        } else if (type === 'champion') {
+                            // 英雄路徑：/static/champion/champion_name.png
+                            const championPath = `/static/champion/${nameWithoutExt.toLowerCase()}.png`;
+                            img.src = championPath;
+                        } else if (type === 'spell') {
+                            // 召喚師技能路徑：/static/summonerspells/spell_name.png
+                            const spellPath = `/static/summonerspells/${nameWithoutExt.toLowerCase()}.png`;
+                            img.src = spellPath;
                         }
                     }
                 })
