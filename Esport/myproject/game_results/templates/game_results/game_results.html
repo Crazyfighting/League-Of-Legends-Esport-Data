@@ -865,8 +865,12 @@
                             
                             // 從路徑中提取資料夾名稱並進行不區分大小寫比對
                             const match = runeImages.find(file => {
-                                const folderName = file.split('/')[4]; // 獲取資料夾名稱
-                                return folderName.toLowerCase() === nameWithoutExt.toLowerCase();
+                                const pathParts = file.split('/');
+                                const folderName = pathParts[4]; // 獲取資料夾名稱
+                                const fileName = pathParts[5]; // 獲取檔案名稱
+                                // 檢查資料夾名稱或檔案名稱是否包含目標名稱（不區分大小寫）
+                                return folderName.toLowerCase().includes(nameWithoutExt.toLowerCase()) ||
+                                       fileName.toLowerCase().includes(nameWithoutExt.toLowerCase());
                             });
                             
                             if (match) {
@@ -874,6 +878,8 @@
                                 const folderPath = match.substring(0, match.lastIndexOf('/') + 1);
                                 const matchedFileName = match.split('/').pop(); // 獲取匹配到的檔案名稱
                                 img.src = folderPath + matchedFileName;
+                            } else {
+                                console.error(`找不到符文圖片: ${src}`);
                             }
                         } else {
                             // 對於其他類型的圖片，使用一般的不區分大小寫比對
