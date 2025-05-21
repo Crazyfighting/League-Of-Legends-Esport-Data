@@ -321,15 +321,15 @@
             }
 
             .match-header {
-                font-size: 13px;
-                padding: 6px;
+                font-size: 16px;
+                padding: 8px;
                 word-break: break-word;
                 white-space: normal;
                 line-height: 1.2;
             }
 
             .match-header.long-title {
-                font-size: 10px;
+                font-size: 14px;
             }
         }
 
@@ -410,18 +410,36 @@
             background-image: var(--team1-image);
             background-color: rgba(0, 0, 0, 0.7);
             background-blend-mode: overlay;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
         }
 
         .team2-column {
             background-image: var(--team2-image);
             background-color: rgba(0, 0, 0, 0.7);
             background-blend-mode: overlay;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
         }
 
-        .team1-column.winner, .team2-column.winner {
-            border: 3px solid var(--gold-color);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-            position: relative;
+        .team1-column.winner {
+            border: 3px solid #007bff;
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+        }
+
+        .team2-column.winner {
+            border: 3px solid #dc3545;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        .team1-column .team-name.winner {
+            color: #007bff;
+            text-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+        }
+
+        .team2-column .team-name.winner {
+            color: #dc3545;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
         }
 
         .team-name.winner {
