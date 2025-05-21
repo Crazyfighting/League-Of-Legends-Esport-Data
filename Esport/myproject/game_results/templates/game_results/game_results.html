@@ -177,34 +177,22 @@
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
-            }
-
-            .tab-buttons {
-                padding: 10px;
-            }
-
-            .tab-button-row {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            .tab-button {
-                padding: 8px 15px;
-                min-width: auto;
-                font-size: 14px;
+                width: 100%;
+                box-sizing: border-box;
             }
 
             .match-table {
-                font-size: 14px;
-            }
-
-            .match-header {
-                font-size: 16px;
-                padding: 10px;
+                width: 100%;
+                table-layout: fixed;
+                word-wrap: break-word;
             }
 
             .team1-column, .team2-column {
+                width: 50% !important;
+                min-width: 0;
+                box-sizing: border-box;
                 padding: 10px;
+                display: table-cell;
             }
 
             .player-info {
@@ -212,6 +200,8 @@
                 align-items: flex-start;
                 padding: 10px;
                 margin-bottom: 10px;
+                width: 100%;
+                box-sizing: border-box;
             }
 
             .champion-image {
@@ -238,6 +228,7 @@
                 min-width: auto;
                 width: 100%;
                 justify-content: flex-start;
+                flex-wrap: wrap;
             }
 
             .kda-info {
@@ -251,10 +242,16 @@
             .player-details {
                 min-width: auto;
                 width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             .player-name {
                 font-size: 16px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             .player-role {
@@ -264,11 +261,29 @@
             .team-name {
                 font-size: 18px;
                 margin-bottom: 10px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             /* 調整分數顯示 */
             td[style*="font-size:24px"] {
                 font-size: 20px !important;
+                padding: 5px;
+            }
+
+            /* 確保表格不會溢出容器 */
+            .match-table {
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+
+            /* 調整表格標題 */
+            .match-header {
+                font-size: 16px;
+                padding: 10px;
+                white-space: normal;
+                word-wrap: break-word;
             }
         }
 
@@ -278,26 +293,8 @@
                 padding: 5px;
             }
 
-            .header h1 {
-                font-size: 1.8em;
-            }
-
-            .tab-button {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-
-            .match-table {
-                font-size: 12px;
-            }
-
-            .match-header {
-                font-size: 14px;
-                padding: 8px;
-            }
-
             .team1-column, .team2-column {
-                padding: 8px;
+                padding: 5px;
             }
 
             .player-info {
@@ -334,6 +331,7 @@
             /* 調整分數顯示 */
             td[style*="font-size:24px"] {
                 font-size: 18px !important;
+                padding: 3px;
             }
         }
 
