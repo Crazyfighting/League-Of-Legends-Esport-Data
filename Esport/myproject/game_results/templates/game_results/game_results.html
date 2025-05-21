@@ -719,7 +719,8 @@
                             if (match) {
                                 // 如果找到匹配的資料夾，使用該資料夾中的圖片
                                 const folderPath = match.substring(0, match.lastIndexOf('/') + 1);
-                                img.src = folderPath + nameWithoutExt + ext;
+                                const matchedFileName = match.split('/').pop(); // 獲取匹配到的檔案名稱
+                                img.src = folderPath + matchedFileName;
                             }
                         } else {
                             // 對於其他類型的圖片，使用一般的不區分大小寫比對
