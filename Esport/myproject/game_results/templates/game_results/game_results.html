@@ -295,7 +295,8 @@
         .winner-animate .player-info {
             background: rgba(0, 0, 0, 0.7);
             border: 1px solid rgba(255, 215, 0, 0.3);
-            animation: final-player-info 3s ease-in-out infinite;
+            transform: none;
+            box-shadow: none;
         }
 
         .winner-animate .player-info:hover {
@@ -309,13 +310,10 @@
             0%, 100% {
                 border-color: rgba(255, 215, 0, 0.3);
                 background: rgba(0, 0, 0, 0.7);
-                transform: scale(1);
             }
             50% {
                 border-color: rgba(255, 215, 0, 0.8);
                 background: rgba(0, 0, 0, 0.8);
-                transform: scale(1.05);
-                box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
             }
         }
 
@@ -707,14 +705,12 @@
                 .then(response => {
                     if (!response.ok) {
                         if (type === 'rune') {
-                            // 對於符文，我們需要特別處理資料夾結構
-                            const runeBasePath = '/static/runes/';
-                            // 獲取所有已載入的符文圖片
+                            // 對於符文，獲取所有已載入的符文圖片路徑
                             const runeImages = Array.from(document.querySelectorAll('.rune-image'))
                                 .map(img => img.src)
-                                .filter(src => src.startsWith(runeBasePath));
+                                .filter(src => src.startsWith('/static/runes/'));
                             
-                            // 尋找不區分大小寫的資料夾匹配
+                            // 從路徑中提取資料夾名稱並進行不區分大小寫比對
                             const match = runeImages.find(file => {
                                 const folderName = file.split('/')[4]; // 獲取資料夾名稱
                                 return folderName.toLowerCase() === nameWithoutExt.toLowerCase();
@@ -724,8 +720,6 @@
                                 // 如果找到匹配的資料夾，使用該資料夾中的圖片
                                 const folderPath = match.substring(0, match.lastIndexOf('/') + 1);
                                 img.src = folderPath + nameWithoutExt + ext;
-                            } else {
-                                img.src = '/static/runes/default/default.png';
                             }
                         } else {
                             // 對於其他類型的圖片，使用一般的不區分大小寫比對
@@ -740,25 +734,13 @@
                             
                             if (match) {
                                 img.src = basePath + match;
-                            } else {
-                                if (type === 'champion') {
-                                    img.src = '/static/champion/default.png';
-                                } else if (type === 'spell') {
-                                    img.src = '/static/summonerspells/default.png';
-                                }
                             }
                         }
                     }
                 })
                 .catch(() => {
-                    // 如果發生錯誤，使用預設圖片
-                    if (type === 'champion') {
-                        img.src = '/static/champion/default.png';
-                    } else if (type === 'rune') {
-                        img.src = '/static/runes/default/default.png';
-                    } else if (type === 'spell') {
-                        img.src = '/static/summonerspells/default.png';
-                    }
+                    // 移除預設圖片的使用
+                    console.error(`Failed to load image: ${src}`);
                 });
         }
 
