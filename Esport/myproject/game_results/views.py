@@ -136,6 +136,15 @@ def get_stage_from_gameid(game_id):
     stage_cache[game_id] = stage
     return stage
 
+def clean_image_path(path, is_team=False):
+    if not path:
+        return path
+    # 如果是隊伍圖片，保持原有大小寫
+    if is_team:
+        return path
+    # 其他圖片路徑轉換為小寫
+    return path.lower()
+
 def game_results(request):
     site = EsportsClient("lol")
     tournaments = lp.get_tournaments('International', year=2024)
@@ -380,6 +389,16 @@ def game_results(request):
 
     print("\n=== 最終排序後的比賽 ===")
     for match in matches:
+        # 隊伍圖片保持原有大小寫
+        match['Team1Image'] = clean_image_path(match['Team1Image'], is_team=True)
+        match['Team2Image'] = clean_image_path(match['Team2Image'], is_team=True)
+        
+        # 其他圖片路徑轉換為小寫
+        for player in list(match['Players1_by_role'].values()) + list(match['Players2_by_role'].values()):
+            player['champion'] = clean_image_path(player['champion'])
+            player['rune'] = clean_image_path(player['rune'])
+            player['summoner_spells'] = [clean_image_path(spell) for spell in player['summoner_spells']]
+        
         print(f"階段: {match['Tab']}")
         print(f"對戰組合: {match['MatchGroup']}")
         print(f"比賽名稱: {match['Tournament']}")
