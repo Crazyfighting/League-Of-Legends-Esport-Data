@@ -200,20 +200,23 @@
 
             .tab-button-row {
                 display: flex;
-                flex-wrap: nowrap;
-                min-width: max-content;
-                gap: 2px;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 4px;
+                margin: 0 auto;
+                padding: 4px 0;
+                max-width: 96vw;
+                box-sizing: border-box;
             }
 
             .tab-button {
-                flex: 1 1 0;
-                min-width: 0;
-                font-size: 11px;
-                padding: 4px 0;
+                flex: 1 1 calc(33.333% - 8px);
+                min-width: 60px;
+                max-width: 100px;
+                text-align: center;
+                font-size: 12px;
+                padding: 6px 4px;
                 white-space: normal;
-                text-overflow: unset;
-                overflow: visible;
-                box-sizing: border-box;
             }
             .table-scroll-x {
                 overflow-x: auto;
@@ -222,13 +225,16 @@
                 box-sizing: border-box;
             }
 
-            .match-table {
-                width: 600px; /* 實際可顯示完整 team1 + team2 */
-                border: 2px solid #FFD700;
-                border-radius: 12px;
+            .match-table-wrapper {
+                transform: scale(0.85);
+                transform-origin: top center;
+                width: 100%;
                 overflow: hidden;
             }
-
+            .match-table {
+                width: auto;
+                max-width: 100%;
+            }
             .team1-column, .team2-column {
                 width: 50%;
                 min-width: 0;
@@ -767,77 +773,79 @@
                 {% for match in matches %}
                     {% if match.Tab == tab.Tab %}
                     <div class="table-scroll-x">
-                    <table class="match-table" style="--team1-image: url('{{ match.Team1Image }}'); --team2-image: url('{{ match.Team2Image }}');">
-                        <tr>
-                            <td colspan="2" class="match-header{% if match.Tournament|length > 30 %} long-title{% endif %}">
-                                {{ match.Tournament }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="background:#222; text-align:center; font-size:24px; font-weight:bold; border-bottom:1px solid #FFD700;" class="{% if match.WinnerTeam == match.Team1 %}winner-score{% else %}loser-score{% endif %}">{{ match.Team1Points }}</td>
-                            <td style="background:#222; text-align:center; font-size:24px; font-weight:bold; border-bottom:1px solid #FFD700;" class="{% if match.WinnerTeam == match.Team2 %}winner-score{% else %}loser-score{% endif %}">{{ match.Team2Points }}</td>
-                        </tr>
-                        <tr>
-                            <td class="team1-column {% if match.WinnerTeam == match.Team1 and match.use_animation %}winner-animate{% elif match.WinnerTeam == match.Team1 %}winner{% endif %}">
-                                <div class="team-name {% if match.WinnerTeam == match.Team1 and match.use_animation %}winner-animate{% elif match.WinnerTeam == match.Team1 %}winner{% endif %}">
-                                    {{ match.Team1 }}
-                                </div>
-                                {% for role in role_order %}
-                                    {% if role in match.Players1_by_role %}
-                                        {% with player=match.Players1_by_role|get_item:role %}
-                                        <div class="player-info">
-                                            <img src="{{ player.champion }}" alt="{{ player.champion }}" class="champion-image">
-                                            <div class="player-details">
-                                                <div class="player-name">
-                                                    {{ player.name|split:" "|first }}
-                                                </div>
-                                                <div class="player-role">{{ role }}</div>
-                                            </div>
-                                            <div class="spells-container">
-                                                <img src="{{ player.rune }}" alt="Rune" class="rune-image">
-                                                {% for spell in player.summoner_spells %}
-                                                    <img src="{{ spell }}" alt="Summoner Spell" class="summoner-spell-image">
-                                                {% endfor %}
-                                            </div>
-                                            <div class="kda-info">
-                                                {{ player.kills }}/{{ player.deaths }}/{{ player.assists }}
-                                            </div>
+                        <div class="match-table-wrapper">
+                            <table class="match-table" style="--team1-image: url('{{ match.Team1Image }}'); --team2-image: url('{{ match.Team2Image }}');">
+                                <tr>
+                                    <td colspan="2" class="match-header{% if match.Tournament|length > 30 %} long-title{% endif %}">
+                                        {{ match.Tournament }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="background:#222; text-align:center; font-size:24px; font-weight:bold; border-bottom:1px solid #FFD700;" class="{% if match.WinnerTeam == match.Team1 %}winner-score{% else %}loser-score{% endif %}">{{ match.Team1Points }}</td>
+                                    <td style="background:#222; text-align:center; font-size:24px; font-weight:bold; border-bottom:1px solid #FFD700;" class="{% if match.WinnerTeam == match.Team2 %}winner-score{% else %}loser-score{% endif %}">{{ match.Team2Points }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="team1-column {% if match.WinnerTeam == match.Team1 and match.use_animation %}winner-animate{% elif match.WinnerTeam == match.Team1 %}winner{% endif %}">
+                                        <div class="team-name {% if match.WinnerTeam == match.Team1 and match.use_animation %}winner-animate{% elif match.WinnerTeam == match.Team1 %}winner{% endif %}">
+                                            {{ match.Team1 }}
                                         </div>
-                                        {% endwith %}
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                            <td class="team2-column {% if match.WinnerTeam == match.Team2 and match.use_animation %}winner-animate{% elif match.WinnerTeam == match.Team2 %}winner{% endif %}">
-                                <div class="team-name {% if match.WinnerTeam == match.Team2 and match.use_animation %}winner-animate{% elif match.WinnerTeam == match.Team2 %}winner{% endif %}">
-                                    {{ match.Team2 }}
-                                </div>
-                                {% for role in role_order %}
-                                    {% if role in match.Players2_by_role %}
-                                        {% with player=match.Players2_by_role|get_item:role %}
-                                        <div class="player-info">
-                                            <img src="{{ player.champion }}" alt="{{ player.champion }}" class="champion-image">
-                                            <div class="player-details">
-                                                <div class="player-name">
-                                                    {{ player.name|split:" "|first }}
+                                        {% for role in role_order %}
+                                            {% if role in match.Players1_by_role %}
+                                                {% with player=match.Players1_by_role|get_item:role %}
+                                                <div class="player-info">
+                                                    <img src="{{ player.champion }}" alt="{{ player.champion }}" class="champion-image">
+                                                    <div class="player-details">
+                                                        <div class="player-name">
+                                                            {{ player.name|split:" "|first }}
+                                                        </div>
+                                                        <div class="player-role">{{ role }}</div>
+                                                    </div>
+                                                    <div class="spells-container">
+                                                        <img src="{{ player.rune }}" alt="Rune" class="rune-image">
+                                                        {% for spell in player.summoner_spells %}
+                                                            <img src="{{ spell }}" alt="Summoner Spell" class="summoner-spell-image">
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="kda-info">
+                                                        {{ player.kills }}/{{ player.deaths }}/{{ player.assists }}
+                                                    </div>
                                                 </div>
-                                                <div class="player-role">{{ role }}</div>
-                                            </div>
-                                            <div class="spells-container">
-                                                <img src="{{ player.rune }}" alt="Rune" class="rune-image">
-                                                {% for spell in player.summoner_spells %}
-                                                    <img src="{{ spell }}" alt="Summoner Spell" class="summoner-spell-image">
-                                                {% endfor %}
-                                            </div>
-                                            <div class="kda-info">
-                                                {{ player.kills }}/{{ player.deaths }}/{{ player.assists }}
-                                            </div>
+                                                {% endwith %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td class="team2-column {% if match.WinnerTeam == match.Team2 and match.use_animation %}winner-animate{% elif match.WinnerTeam == match.Team2 %}winner{% endif %}">
+                                        <div class="team-name {% if match.WinnerTeam == match.Team2 and match.use_animation %}winner-animate{% elif match.WinnerTeam == match.Team2 %}winner{% endif %}">
+                                            {{ match.Team2 }}
                                         </div>
-                                        {% endwith %}
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                        </tr>
-                    </table>
+                                        {% for role in role_order %}
+                                            {% if role in match.Players2_by_role %}
+                                                {% with player=match.Players2_by_role|get_item:role %}
+                                                <div class="player-info">
+                                                    <img src="{{ player.champion }}" alt="{{ player.champion }}" class="champion-image">
+                                                    <div class="player-details">
+                                                        <div class="player-name">
+                                                            {{ player.name|split:" "|first }}
+                                                        </div>
+                                                        <div class="player-role">{{ role }}</div>
+                                                    </div>
+                                                    <div class="spells-container">
+                                                        <img src="{{ player.rune }}" alt="Rune" class="rune-image">
+                                                        {% for spell in player.summoner_spells %}
+                                                            <img src="{{ spell }}" alt="Summoner Spell" class="summoner-spell-image">
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="kda-info">
+                                                        {{ player.kills }}/{{ player.deaths }}/{{ player.assists }}
+                                                    </div>
+                                                </div>
+                                                {% endwith %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                     {% endif %}
                 {% endfor %}
