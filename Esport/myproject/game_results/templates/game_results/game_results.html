@@ -202,17 +202,18 @@
             }
             .tab-button-row {
                 display: flex;
-                flex-wrap: nowrap;
+                flex-wrap: wrap;
                 gap: 5px;
-                width: 100%;
+                width: 100vw;
+                box-sizing: border-box;
                 overflow-x: unset;
                 justify-content: stretch;
             }
             .tab-button {
-                flex: 1 1 0;
+                flex: 1 1 90px;
                 font-size: 12px;
                 padding: 4px 0;
-                min-width: 0;
+                min-width: 90px;
                 max-width: unset;
                 white-space: normal;
                 text-overflow: unset;
@@ -220,17 +221,13 @@
                 box-sizing: border-box;
             }
             .table-scroll-x {
-                overflow-x: auto;
-                width: 100vw;
-                padding-bottom: 2px;
-                margin: 0;
+                padding-left: 6px;
+                padding-right: 6px;
             }
             .match-table {
-                width: 100vw;
-                max-width: 100vw;
-                min-width: 0;
-                font-size: 10px;
-                table-layout: fixed;
+                width: 100%;
+                max-width: 100%;
+                margin: 0 auto;
             }
             .team1-column, .team2-column {
                 max-width: 50vw;
@@ -240,14 +237,23 @@
                 font-size: 10px;
                 box-sizing: border-box;
                 word-break: break-all;
+                background-size: contain !important;
+                background-position: center !important;
             }
             .player-info, .player-details, .kda-info {
                 max-width: 100%;
                 min-width: 0;
                 font-size: 10px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+                overflow: visible !important;
+                text-overflow: unset !important;
+                white-space: normal !important;
+                display: block !important;
+            }
+            .spells-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 2px;
+                margin: 0;
             }
             .champion-image, .rune-image, .summoner-spell-image {
                 max-width: 18px;
@@ -258,10 +264,12 @@
             .team-name {
                 font-size: 11px;
                 margin-bottom: 2px;
+                word-break: break-all;
             }
             .match-header {
                 font-size: 13px;
                 padding: 6px;
+                word-break: break-all;
             }
         }
 
