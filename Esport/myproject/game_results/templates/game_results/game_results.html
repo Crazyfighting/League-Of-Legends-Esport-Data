@@ -182,14 +182,17 @@
                 padding: 0;
                 margin: 0;
             }
+
             .header {
                 padding: 8px;
             }
+
             .header h1 {
                 font-size: 1.2em;
                 padding: 0;
                 margin: 0 0 5px 0;
             }
+
             .tab-buttons {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
@@ -210,7 +213,7 @@
             }
 
             .tab-button {
-                flex: 1 1 calc(33.333% - 8px);
+                flex: 1 1 30%;
                 min-width: 60px;
                 max-width: 100px;
                 text-align: center;
@@ -218,23 +221,28 @@
                 padding: 6px 4px;
                 white-space: normal;
             }
+
             .table-scroll-x {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
-                padding: 0 2vw;
+                padding: 0;
                 box-sizing: border-box;
             }
 
             .match-table-wrapper {
                 transform: scale(0.85);
-                transform-origin: top center;
-                width: 100%;
-                overflow: hidden;
+                transform-origin: top left;
+                width: 705px; /* 原始 match-table 寬 600 / 0.85 */
             }
+
             .match-table {
-                width: auto;
-                max-width: 100%;
+                width: 100%;
+                border: 2px solid #FFD700;
+                border-radius: 12px;
+                overflow: hidden;
+                box-sizing: border-box;
             }
+
             .team1-column, .team2-column {
                 width: 50%;
                 min-width: 0;
@@ -245,6 +253,7 @@
                 background-size: contain !important;
                 background-position: center !important;
             }
+
             .player-info {
                 display: grid !important;
                 grid-template-columns: 1fr 1fr;
@@ -253,10 +262,11 @@
                 align-items: center;
                 padding: 6px 0;
                 margin-bottom: 4px;
-                background: rgba(0,0,0,0.5);
+                background: rgba(0, 0, 0, 0.5);
                 border-radius: 8px;
                 min-height: 54px;
             }
+
             .player-details {
                 grid-column: 1 / 2;
                 grid-row: 1 / 2;
@@ -267,6 +277,7 @@
                 font-weight: bold;
                 padding-left: 2px;
             }
+
             .champion-image {
                 grid-column: 2 / 3;
                 grid-row: 1 / 3;
@@ -278,6 +289,7 @@
                 box-shadow: 0 0 6px #FFD700;
                 background: #222;
             }
+
             .spells-container {
                 grid-column: 1 / 2;
                 grid-row: 2 / 3;
@@ -286,10 +298,13 @@
                 margin-top: 2px;
                 margin-left: 2px;
             }
-            .rune-image, .summoner-spell-image {
+
+            .rune-image,
+            .summoner-spell-image {
                 width: 16px;
                 height: 16px;
             }
+
             .kda-info {
                 grid-column: 2 / 3;
                 grid-row: 2 / 3;
@@ -300,17 +315,20 @@
                 color: #FFD700;
                 margin-right: 2px;
             }
+
             .match-header {
                 font-size: 13px;
                 padding: 6px;
-                word-break: break-all;
+                word-break: break-word;
                 white-space: normal;
                 line-height: 1.2;
             }
+
             .match-header.long-title {
                 font-size: 10px;
             }
         }
+
 
         /* 更小的螢幕 */
         @media (max-width: 480px) {
