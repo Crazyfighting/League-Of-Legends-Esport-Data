@@ -1376,18 +1376,29 @@
             titleParts = titleParts.slice(0, -2);
             originalTitle = titleParts.join(' ');
 
-            // 在頁面頂部添加標題和返回按鈕
-            let header = document.querySelector('.match-details-header');
-            if (!header) {
-                header = document.createElement('div');
-                header.className = 'match-details-header';
-                matchContent.insertBefore(header, matchContent.firstChild);
+            // 移除舊的標題和返回按鈕（如果存在）
+            const oldHeader = document.querySelector('.match-details-header');
+            if (oldHeader) {
+                oldHeader.remove();
             }
 
+            // 創建新的標題和返回按鈕
+            const header = document.createElement('div');
+            header.className = 'match-details-header';
             header.innerHTML = `
                 <div class="match-details-title">${originalTitle}</div>
                 <button class="back-button" onclick="goBack()">返回</button>
             `;
+            
+            // 確保標題和返回按鈕被添加到正確的位置
+            const firstChild = matchContent.firstChild;
+            if (firstChild) {
+                matchContent.insertBefore(header, firstChild);
+            } else {
+                matchContent.appendChild(header);
+            }
+            
+            // 強制顯示標題和返回按鈕
             header.style.display = 'block';
         }
 
@@ -1398,7 +1409,7 @@
                 // 移除標題和返回按鈕
                 const header = document.querySelector('.match-details-header');
                 if (header) {
-                    header.style.display = 'none';
+                    header.remove();
                 }
                 document.querySelector('.landing-page').style.display = 'block';
                 document.querySelectorAll('.tab-content').forEach(content => {
@@ -1481,7 +1492,7 @@
             }
         });
 
-        // 初始化時顯示入口頁面
+        // 確保在頁面載入完成後初始化
         document.addEventListener('DOMContentLoaded', function() {
             showStage('landing');
         });
