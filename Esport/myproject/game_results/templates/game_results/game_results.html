@@ -1170,7 +1170,11 @@
         function showStage(stage) {
             currentStage = stage;
             document.querySelector('.stage-buttons').style.display = 'none';
-            document.querySelector('.back-button').style.display = 'block';
+            
+            // 只在非入口頁面顯示返回按鈕
+            if (stage !== 'landing') {
+                document.querySelector('.back-button').style.display = 'block';
+            }
 
             if (stage === 'MainEvent') {
                 showMainEventRounds();
@@ -1209,26 +1213,59 @@
             matches.forEach(match => {
                 if (match.id === stage) {
                     const matchElements = match.querySelectorAll('.match-table');
-                    // 顯示所有比賽按鈕
+                    // 使用 Set 來追蹤已經顯示過的隊伍組合
+                    const shownMatches = new Set();
+                    
                     matchElements.forEach(matchElement => {
-                        const button = document.createElement('button');
-                        button.className = 'match-button';
-                        button.setAttribute('data-stage', stage.split(' ')[0]);
                         const team1 = matchElement.querySelector('.team1-column .team-name').textContent.trim();
                         const team2 = matchElement.querySelector('.team2-column .team-name').textContent.trim();
-                        button.textContent = `${team1} vs ${team2}`;
-                        button.onclick = () => showMatchDetails(matchElement);
-                        matchButtons.appendChild(button);
+                        const matchKey = `${team1} vs ${team2}`;
+                        
+                        // 如果這個隊伍組合還沒有顯示過，創建按鈕
+                        if (!shownMatches.has(matchKey)) {
+                            shownMatches.add(matchKey);
+                            const button = document.createElement('button');
+                            button.className = 'match-button';
+                            button.setAttribute('data-stage', stage.split(' ')[0]);
+                            button.textContent = matchKey;
+                            button.onclick = () => showMatchDetails(matchElement, matchElements);
+                            matchButtons.appendChild(button);
+                        }
                     });
                 }
             });
         }
 
-        function showMatchDetails(matchElement) {
+        function showMatchDetails(matchElement, allMatches) {
             currentMatch = matchElement;
             document.querySelector('.landing-page').style.display = 'none';
+            
+            // 隱藏所有比賽內容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+
             const matchContent = matchElement.closest('.tab-content');
             matchContent.style.display = 'block';
+
+            // 只顯示當前系列賽的比賽
+            const team1 = matchElement.querySelector('.team1-column .team-name').textContent.trim();
+            const team2 = matchElement.querySelector('.team2-column .team-name').textContent.trim();
+            
+            // 隱藏所有比賽表格
+            matchContent.querySelectorAll('.match-table').forEach(table => {
+                table.style.display = 'none';
+            });
+
+            // 只顯示當前系列賽的比賽表格
+            allMatches.forEach(match => {
+                const currentTeam1 = match.querySelector('.team1-column .team-name').textContent.trim();
+                const currentTeam2 = match.querySelector('.team2-column .team-name').textContent.trim();
+                if ((currentTeam1 === team1 && currentTeam2 === team2) || 
+                    (currentTeam1 === team2 && currentTeam2 === team1)) {
+                    match.style.display = 'block';
+                }
+            });
 
             // 添加詳細對局頁面的標題和返回按鈕
             let header = document.querySelector('.match-details-header');
@@ -1331,6 +1368,11 @@
             if (firstTab) {
                 firstTab.click();
             }
+        });
+
+        // 初始化時顯示入口頁面
+        document.addEventListener('DOMContentLoaded', function() {
+            showStage('landing');
         });
     </script>
 </body>
