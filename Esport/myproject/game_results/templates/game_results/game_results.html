@@ -595,18 +595,14 @@
             }
         }
 
-        /* 移除可能影響動畫的樣式 */
-        .tab-content:not(.active) .team1-column.winner-animate,
-        .tab-content:not(.active) .team2-column.winner-animate {
+        /* 確保動畫在 tab-content 中也能正常運作 */
+        .tab-content .team1-column.winner-animate,
+        .tab-content .team2-column.winner-animate {
             animation: final-bg-flash 3s ease-in-out infinite !important;
-            border-color: var(--gold-color);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
         }
 
-        .tab-content:not(.active) .team-name.winner-animate {
+        .tab-content .team-name.winner-animate {
             animation: final-winner-glow 3s ease-in-out infinite !important;
-            color: var(--gold-color);
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         .winner-animate .player-info {
