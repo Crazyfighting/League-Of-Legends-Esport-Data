@@ -1254,6 +1254,53 @@
             display: flex;
             justify-content: center;
         }
+
+        /* 添加淡入淡出動畫效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        .stage-buttons,
+        .round-buttons,
+        .match-buttons,
+        .tab-content {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .stage-buttons.fade-in,
+        .round-buttons.fade-in,
+        .match-buttons.fade-in,
+        .tab-content.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -1367,29 +1414,44 @@
         function showStage(stage) {
             currentStage = stage;
             
-            // 隱藏所有內容
-            document.querySelector('.stage-buttons').style.display = 'none';
-            document.getElementById('roundButtons').style.display = 'none';
-            document.getElementById('matchButtons').style.display = 'none';
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.style.display = 'none';
+            // 添加淡出效果
+            const elements = [
+                document.querySelector('.stage-buttons'),
+                document.getElementById('roundButtons'),
+                document.getElementById('matchButtons'),
+                ...document.querySelectorAll('.tab-content')
+            ];
+            
+            elements.forEach(element => {
+                if (element && element.style.display !== 'none') {
+                    element.classList.add('fade-out');
+                    setTimeout(() => {
+                        element.style.display = 'none';
+                        element.classList.remove('fade-out');
+                    }, 500);
+                }
             });
 
             // 如果是入口頁面，顯示所有選項
             if (stage === 'landing') {
-                document.querySelector('.stage-buttons').style.display = 'flex';
-                document.querySelector('.back-button').style.display = 'none';
+                setTimeout(() => {
+                    document.querySelector('.stage-buttons').style.display = 'flex';
+                    document.querySelector('.stage-buttons').classList.add('fade-in');
+                    document.querySelector('.back-button').style.display = 'none';
+                }, 500);
                 return;
             }
 
             // 非入口頁面顯示返回按鈕
             document.querySelector('.back-button').style.display = 'block';
 
-            if (stage === 'MainEvent') {
-                showMainEventRounds();
-            } else {
-                showMatches(stage);
-            }
+            setTimeout(() => {
+                if (stage === 'MainEvent') {
+                    showMainEventRounds();
+                } else {
+                    showMatches(stage);
+                }
+            }, 500);
         }
 
         function showMainEventRounds() {
@@ -1405,12 +1467,25 @@
                 button.onclick = () => showMainEventMatches(i);
                 roundButtons.appendChild(button);
             }
+            
+            // 添加淡入效果
+            setTimeout(() => {
+                roundButtons.classList.add('fade-in');
+            }, 50);
         }
 
         function showMainEventMatches(round) {
             currentRound = round;
-            document.getElementById('roundButtons').style.display = 'none';
-            showMatches(`MainEvent Round ${round}`);
+            
+            // 添加淡出效果
+            const roundButtons = document.getElementById('roundButtons');
+            roundButtons.classList.add('fade-out');
+            
+            setTimeout(() => {
+                roundButtons.style.display = 'none';
+                roundButtons.classList.remove('fade-out');
+                showMatches(`MainEvent Round ${round}`);
+            }, 500);
         }
 
         function showMatches(stage) {
@@ -1455,72 +1530,85 @@
                     });
                 }
             });
+
+            // 添加淡入效果
+            setTimeout(() => {
+                matchButtons.classList.add('fade-in');
+            }, 50);
         }
 
         function showMatchDetails(matchElement, allMatches, stage) {
             currentMatch = matchElement;
-            document.querySelector('.landing-page').style.display = 'none';
             
-            // 隱藏所有比賽內容
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.style.display = 'none';
-            });
-
-            const matchContent = matchElement.closest('.tab-content');
-            matchContent.style.display = 'block';
-
-            // 只顯示當前系列賽的比賽
-            const team1 = matchElement.querySelector('.team1-column .team-name').textContent.trim();
-            const team2 = matchElement.querySelector('.team2-column .team-name').textContent.trim();
+            // 添加淡出效果
+            document.querySelector('.landing-page').classList.add('fade-out');
             
-            // 隱藏所有比賽表格
-            matchContent.querySelectorAll('.match-table').forEach(table => {
-                table.style.display = 'none';
-            });
-
-            // 只顯示當前系列賽的比賽表格（不考慮隊伍順序）
-            allMatches.forEach(match => {
-                const currentTeam1 = match.querySelector('.team1-column .team-name').textContent.trim();
-                const currentTeam2 = match.querySelector('.team2-column .team-name').textContent.trim();
-                const currentTeams = [currentTeam1, currentTeam2].sort();
-                const selectedTeams = [team1, team2].sort();
+            setTimeout(() => {
+                document.querySelector('.landing-page').style.display = 'none';
+                document.querySelector('.landing-page').classList.remove('fade-out');
                 
-                if (currentTeams.join('') === selectedTeams.join('')) {
-                    match.style.display = 'block';
+                // 隱藏所有比賽內容
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+
+                const matchContent = matchElement.closest('.tab-content');
+                matchContent.style.display = 'block';
+                matchContent.classList.add('fade-in');
+
+                // 只顯示當前系列賽的比賽
+                const team1 = matchElement.querySelector('.team1-column .team-name').textContent.trim();
+                const team2 = matchElement.querySelector('.team2-column .team-name').textContent.trim();
+                
+                // 隱藏所有比賽表格
+                matchContent.querySelectorAll('.match-table').forEach(table => {
+                    table.style.display = 'none';
+                });
+
+                // 只顯示當前系列賽的比賽表格（不考慮隊伍順序）
+                allMatches.forEach(match => {
+                    const currentTeam1 = match.querySelector('.team1-column .team-name').textContent.trim();
+                    const currentTeam2 = match.querySelector('.team2-column .team-name').textContent.trim();
+                    const currentTeams = [currentTeam1, currentTeam2].sort();
+                    const selectedTeams = [team1, team2].sort();
+                    
+                    if (currentTeams.join('') === selectedTeams.join('')) {
+                        match.style.display = 'block';
+                    }
+                });
+
+                // 獲取原始標題並移除最後兩個非空白子字串
+                let originalTitle = matchElement.querySelector('.match-header').textContent;
+                let titleParts = originalTitle.split(/\s+/).filter(part => part.trim() !== '');
+                titleParts = titleParts.slice(0, -2);
+                originalTitle = titleParts.join(' ');
+
+                // 移除舊的標題和返回按鈕（如果存在）
+                const oldHeader = document.querySelector('.match-details-header');
+                if (oldHeader) {
+                    oldHeader.remove();
                 }
-            });
 
-            // 獲取原始標題並移除最後兩個非空白子字串
-            let originalTitle = matchElement.querySelector('.match-header').textContent;
-            // 分割字串並移除最後兩個非空白子字串
-            let titleParts = originalTitle.split(/\s+/).filter(part => part.trim() !== '');
-            titleParts = titleParts.slice(0, -2);
-            originalTitle = titleParts.join(' ');
-
-            // 移除舊的標題和返回按鈕（如果存在）
-            const oldHeader = document.querySelector('.match-details-header');
-            if (oldHeader) {
-                oldHeader.remove();
-            }
-
-            // 創建新的標題和返回按鈕
-            const header = document.createElement('div');
-            header.className = 'match-details-header';
-            header.innerHTML = `
-                <div class="match-details-title">${originalTitle}</div>
-                <button class="back-button" onclick="goBack()">返回</button>
-            `;
-            
-            // 確保標題和返回按鈕被添加到正確的位置
-            const firstChild = matchContent.firstChild;
-            if (firstChild) {
-                matchContent.insertBefore(header, firstChild);
-            } else {
-                matchContent.appendChild(header);
-            }
-            
-            // 強制顯示標題和返回按鈕
-            header.style.display = 'block';
+                // 創建新的標題和返回按鈕
+                const header = document.createElement('div');
+                header.className = 'match-details-header';
+                header.innerHTML = `
+                    <div class="match-details-title">${originalTitle}</div>
+                    <button class="back-button" onclick="goBack()">返回</button>
+                `;
+                
+                // 確保標題和返回按鈕被添加到正確的位置
+                const firstChild = matchContent.firstChild;
+                if (firstChild) {
+                    matchContent.insertBefore(header, firstChild);
+                } else {
+                    matchContent.appendChild(header);
+                }
+                
+                // 強制顯示標題和返回按鈕
+                header.style.display = 'block';
+                header.classList.add('fade-in');
+            }, 500);
         }
 
         function goBack() {
@@ -1530,24 +1618,55 @@
                 // 移除標題和返回按鈕
                 const header = document.querySelector('.match-details-header');
                 if (header) {
-                    header.remove();
+                    header.classList.add('fade-out');
+                    setTimeout(() => {
+                        header.remove();
+                    }, 500);
                 }
-                document.querySelector('.landing-page').style.display = 'block';
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.style.display = 'none';
-                });
+                
+                const currentContent = document.querySelector('.tab-content[style*="display: block"]');
+                if (currentContent) {
+                    currentContent.classList.add('fade-out');
+                }
+                
+                setTimeout(() => {
+                    document.querySelector('.landing-page').style.display = 'block';
+                    document.querySelector('.landing-page').classList.add('fade-in');
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.style.display = 'none';
+                        content.classList.remove('fade-out');
+                    });
+                }, 500);
             } else if (currentRound) {
                 // 如果在 MainEvent 的某一輪，返回輪次選擇
                 currentRound = '';
-                document.getElementById('roundButtons').style.display = 'flex';
-                document.getElementById('matchButtons').style.display = 'none';
+                const matchButtons = document.getElementById('matchButtons');
+                matchButtons.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    matchButtons.style.display = 'none';
+                    matchButtons.classList.remove('fade-out');
+                    document.getElementById('roundButtons').style.display = 'flex';
+                    document.getElementById('roundButtons').classList.add('fade-in');
+                }, 500);
             } else if (currentStage) {
                 // 如果在某個階段，返回階段選擇
                 currentStage = '';
-                document.querySelector('.stage-buttons').style.display = 'flex';
-                document.getElementById('roundButtons').style.display = 'none';
-                document.getElementById('matchButtons').style.display = 'none';
-                document.querySelector('.back-button').style.display = 'none';
+                const currentButtons = document.getElementById('roundButtons').style.display !== 'none' ? 
+                    document.getElementById('roundButtons') : 
+                    document.getElementById('matchButtons');
+                
+                currentButtons.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    currentButtons.style.display = 'none';
+                    currentButtons.classList.remove('fade-out');
+                    document.querySelector('.stage-buttons').style.display = 'flex';
+                    document.querySelector('.stage-buttons').classList.add('fade-in');
+                    document.getElementById('roundButtons').style.display = 'none';
+                    document.getElementById('matchButtons').style.display = 'none';
+                    document.querySelector('.back-button').style.display = 'none';
+                }, 500);
             }
         }
 
