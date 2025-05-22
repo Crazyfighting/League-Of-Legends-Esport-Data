@@ -907,7 +907,9 @@
         }
 
         /* 基礎按鈕樣式 */
-        .stage-button {
+        .stage-button,
+        .round-button,
+        .match-button {
             padding: 20px;
             font-size: 1.5em;
             background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
@@ -920,95 +922,14 @@
             font-weight: bold;
             position: relative;
             overflow: hidden;
-        }
-
-        /* Play-in 按鈕樣式 */
-        .stage-button[onclick*="PlayIn"] {
-            border-width: 1px;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
-        }
-
-        /* Main Event 按鈕樣式 */
-        .stage-button[onclick*="MainEvent"] {
-            border-width: 2px;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-        }
-
-        /* 八強按鈕樣式 */
-        .stage-button[onclick*="QuarterFinals"] {
-            border-width: 2px;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-        }
-
-        /* 四強按鈕樣式 */
-        .stage-button[onclick*="SemiFinals"] {
-            border-width: 3px;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-        }
-
-        /* 決賽按鈕樣式 */
-        .stage-button[onclick*="Finals"] {
-            border-width: 3px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-            animation: finals-glow 2s infinite;
-        }
-
-        /* 按鈕懸浮效果 */
-        .stage-button:hover {
-            transform: translateY(-5px);
-            background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
-        }
-
-        .stage-button[onclick*="PlayIn"]:hover {
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-        }
-
-        .stage-button[onclick*="MainEvent"]:hover {
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-        }
-
-        .stage-button[onclick*="QuarterFinals"]:hover {
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-        }
-
-        .stage-button[onclick*="SemiFinals"]:hover {
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-        }
-
-        .stage-button[onclick*="Finals"]:hover {
-            box-shadow: 0 0 35px rgba(255, 215, 0, 0.7);
-        }
-
-        /* 修改 Round 按鈕樣式，使其與 Play-in 按鈕一致 */
-        .round-button {
-            padding: 20px;
-            font-size: 1.5em;
-            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-            border: 1px solid var(--gold-color);
-            border-radius: 15px;
-            color: var(--gold-color);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            font-weight: bold;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
             text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
-            width: 100%;
-            margin-bottom: 15px;
         }
 
-        .round-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-            background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
-        }
-
-        .round-button::before {
+        /* 銀光特效 */
+        .stage-button::before,
+        .round-button::before,
+        .match-button::before {
             content: '';
             position: absolute;
             top: 0;
@@ -1018,31 +939,76 @@
             background: linear-gradient(
                 90deg,
                 transparent,
-                rgba(255, 215, 0, 0.2),
+                rgba(255, 255, 255, 0.2),
                 transparent
             );
             transition: 0.5s;
         }
 
-        .round-button:hover::before {
+        .stage-button:hover::before,
+        .round-button:hover::before,
+        .match-button:hover::before {
             left: 100%;
         }
 
-        /* 移除所有 Round 按鈕的特殊效果，但保持基本樣式 */
+        /* 按鈕懸浮效果 */
+        .stage-button:hover,
+        .round-button:hover,
+        .match-button:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+        }
+
+        /* 移除所有 Round 按鈕的特殊效果 */
         .round-button[data-round="1"],
         .round-button[data-round="2"],
         .round-button[data-round="3"],
         .round-button[data-round="4"],
         .round-button[data-round="5"] {
-            border-width: 1px;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+            border-width: 2px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
         }
 
-        /* 移除 Round 5 的動畫效果 */
-        .round-button[data-round="5"] {
-            animation: none;
+        /* 對局按鈕特殊樣式 */
+        .match-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
         }
 
+        /* 返回按鈕樣式保持不變 */
+        .back-button {
+            display: none;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            border: 2px solid var(--gold-color);
+            border-radius: 10px;
+            color: var(--gold-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            margin: 20px auto;
+        }
+
+        .back-button::before {
+            content: '←';
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
+        }
 
         /* 新增對局按鈕樣式 */
         .match-button {
