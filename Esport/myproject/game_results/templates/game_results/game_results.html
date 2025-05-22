@@ -1414,6 +1414,43 @@
         function showStage(stage) {
             currentStage = stage;
             
+            // 如果是入口頁面
+            if (stage === 'landing') {
+                // 檢查是否是初始載入
+                const isInitialLoad = !document.querySelector('.stage-buttons').classList.contains('fade-in');
+                
+                if (isInitialLoad) {
+                    // 初始載入時直接顯示
+                    document.querySelector('.stage-buttons').style.display = 'flex';
+                    document.querySelector('.back-button').style.display = 'none';
+                } else {
+                    // 從其他頁面返回時使用淡入效果
+                    const elements = [
+                        document.getElementById('roundButtons'),
+                        document.getElementById('matchButtons'),
+                        ...document.querySelectorAll('.tab-content')
+                    ];
+                    
+                    elements.forEach(element => {
+                        if (element && element.style.display !== 'none') {
+                            element.classList.add('fade-out');
+                            setTimeout(() => {
+                                element.style.display = 'none';
+                                element.classList.remove('fade-out');
+                            }, 500);
+                        }
+                    });
+
+                    setTimeout(() => {
+                        document.querySelector('.stage-buttons').style.display = 'flex';
+                        document.querySelector('.stage-buttons').classList.add('fade-in');
+                        document.querySelector('.back-button').style.display = 'none';
+                    }, 500);
+                }
+                return;
+            }
+
+            // 非入口頁面
             // 添加淡出效果
             const elements = [
                 document.querySelector('.stage-buttons'),
@@ -1432,17 +1469,7 @@
                 }
             });
 
-            // 如果是入口頁面，顯示所有選項
-            if (stage === 'landing') {
-                setTimeout(() => {
-                    document.querySelector('.stage-buttons').style.display = 'flex';
-                    document.querySelector('.stage-buttons').classList.add('fade-in');
-                    document.querySelector('.back-button').style.display = 'none';
-                }, 500);
-                return;
-            }
-
-            // 非入口頁面顯示返回按鈕
+            // 顯示返回按鈕
             document.querySelector('.back-button').style.display = 'block';
 
             setTimeout(() => {
