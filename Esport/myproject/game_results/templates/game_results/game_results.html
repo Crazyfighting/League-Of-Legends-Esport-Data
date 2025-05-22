@@ -797,7 +797,7 @@
             background: linear-gradient(
                 90deg,
                 transparent,
-                rgba(255, 255, 255, 0.1),
+                rgba(255, 215, 0, 0.2),
                 transparent
             );
             transition: 0.5s;
@@ -922,11 +922,11 @@
             font-weight: bold;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
             text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
         }
 
-        /* 銀光特效 */
+        /* 黃光掃過效果 */
         .stage-button::before,
         .round-button::before,
         .match-button::before {
@@ -939,10 +939,12 @@
             background: linear-gradient(
                 90deg,
                 transparent,
-                rgba(255, 255, 255, 0.2),
+                rgba(255, 215, 0, 0.2),
                 transparent
             );
             transition: 0.5s;
+            pointer-events: none;
+            z-index: 1;
         }
 
         .stage-button:hover::before,
@@ -957,7 +959,7 @@
         .match-button:hover {
             transform: translateY(-5px);
             background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
         }
 
         /* 移除所有 Round 按鈕的特殊效果 */
@@ -967,7 +969,7 @@
         .round-button[data-round="4"],
         .round-button[data-round="5"] {
             border-width: 2px;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
         }
 
         /* 對局按鈕特殊樣式 */
@@ -1151,28 +1153,27 @@
         /* 為不同輪次添加不同效果 */
         .round-button[data-round="1"] {
             border-width: 2px;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
         }
 
         .round-button[data-round="2"] {
             border-width: 2px;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
         }
 
         .round-button[data-round="3"] {
             border-width: 2px;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
         }
 
         .round-button[data-round="4"] {
-            border-width: 3px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            border-width: 2px;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
         }
 
         .round-button[data-round="5"] {
-            border-width: 3px;
-            box-shadow: 0 0 35px rgba(255, 215, 0, 0.7);
-            animation: round5-glow 2s infinite;
+            border-width: 2px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
         }
 
 
