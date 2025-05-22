@@ -1283,7 +1283,12 @@
                 }
             });
 
-            // 添加詳細對局頁面的標題和返回按鈕
+            // 獲取原始標題並移除 Game1、Game2 等字樣
+            let originalTitle = matchElement.querySelector('.match-header').textContent;
+            // 移除 "Game X" 或 "GameX" 格式的字樣，包括前面的空格
+            originalTitle = originalTitle.replace(/\s*Game\s*\d+$/, '').trim();
+
+            // 確保每個對局都有標題和返回按鈕
             let header = document.querySelector('.match-details-header');
             if (!header) {
                 header = document.createElement('div');
@@ -1291,26 +1296,39 @@
                 matchContent.insertBefore(header, matchContent.firstChild);
             }
 
-            // 獲取原始標題並移除 Game1、Game2 等字樣
-            let originalTitle = matchElement.querySelector('.match-header').textContent;
-            // 移除 "Game X" 或 "GameX" 格式的字樣
-            originalTitle = originalTitle.replace(/\s*Game\s*\d+$/, '');
-
+            // 更新標題和返回按鈕
             header.innerHTML = `
                 <div class="match-details-title">${originalTitle}</div>
                 <button class="back-button" onclick="goBack()">返回</button>
             `;
             header.style.display = 'block';
+
+            // 確保所有顯示的對局都有標題和返回按鈕
+            matchContent.querySelectorAll('.match-table').forEach(table => {
+                if (table.style.display !== 'none') {
+                    let tableHeader = table.querySelector('.match-details-header');
+                    if (!tableHeader) {
+                        tableHeader = document.createElement('div');
+                        tableHeader.className = 'match-details-header';
+                        table.insertBefore(tableHeader, table.firstChild);
+                    }
+                    tableHeader.innerHTML = `
+                        <div class="match-details-title">${originalTitle}</div>
+                        <button class="back-button" onclick="goBack()">返回</button>
+                    `;
+                    tableHeader.style.display = 'block';
+                }
+            });
         }
 
         function goBack() {
             if (currentMatch) {
                 // 如果在詳細對局頁面，返回比賽列表
                 currentMatch = null;
-                const header = document.querySelector('.match-details-header');
-                if (header) {
+                // 移除所有標題和返回按鈕
+                document.querySelectorAll('.match-details-header').forEach(header => {
                     header.style.display = 'none';
-                }
+                });
                 document.querySelector('.landing-page').style.display = 'block';
                 document.querySelectorAll('.tab-content').forEach(content => {
                     content.style.display = 'none';
