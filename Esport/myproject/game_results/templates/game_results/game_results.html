@@ -1242,7 +1242,7 @@
                             button.className = 'match-button';
                             button.setAttribute('data-stage', stage.split(' ')[0]);
                             button.textContent = `${team1} vs ${team2}`;
-                            button.onclick = () => showMatchDetails(matchElement, matchElements);
+                            button.onclick = () => showMatchDetails(matchElement, matchElements, stage);
                             matchButtons.appendChild(button);
                         }
                     });
@@ -1250,7 +1250,7 @@
             });
         }
 
-        function showMatchDetails(matchElement, allMatches) {
+        function showMatchDetails(matchElement, allMatches, stage) {
             currentMatch = matchElement;
             document.querySelector('.landing-page').style.display = 'none';
             
@@ -1290,8 +1290,14 @@
                 header.className = 'match-details-header';
                 matchContent.insertBefore(header, matchContent.firstChild);
             }
+
+            // 獲取原始標題並移除 Game1、Game2 等字樣
+            let originalTitle = matchElement.querySelector('.match-header').textContent;
+            // 移除 "Game X" 或 "GameX" 格式的字樣
+            originalTitle = originalTitle.replace(/\s*Game\s*\d+$/, '');
+
             header.innerHTML = `
-                <div class="match-details-title">${matchElement.querySelector('.match-header').textContent}</div>
+                <div class="match-details-title">${originalTitle}</div>
                 <button class="back-button" onclick="goBack()">返回</button>
             `;
             header.style.display = 'block';
