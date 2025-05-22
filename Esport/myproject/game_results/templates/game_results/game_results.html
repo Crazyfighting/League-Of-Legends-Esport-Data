@@ -1169,12 +1169,24 @@
 
         function showStage(stage) {
             currentStage = stage;
-            document.querySelector('.stage-buttons').style.display = 'none';
             
-            // 只在非入口頁面顯示返回按鈕
-            if (stage !== 'landing') {
-                document.querySelector('.back-button').style.display = 'block';
+            // 隱藏所有內容
+            document.querySelector('.stage-buttons').style.display = 'none';
+            document.getElementById('roundButtons').style.display = 'none';
+            document.getElementById('matchButtons').style.display = 'none';
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // 如果是入口頁面，顯示所有選項
+            if (stage === 'landing') {
+                document.querySelector('.stage-buttons').style.display = 'flex';
+                document.querySelector('.back-button').style.display = 'none';
+                return;
             }
+
+            // 非入口頁面顯示返回按鈕
+            document.querySelector('.back-button').style.display = 'block';
 
             if (stage === 'MainEvent') {
                 showMainEventRounds();
@@ -1219,15 +1231,17 @@
                     matchElements.forEach(matchElement => {
                         const team1 = matchElement.querySelector('.team1-column .team-name').textContent.trim();
                         const team2 = matchElement.querySelector('.team2-column .team-name').textContent.trim();
-                        const matchKey = `${team1} vs ${team2}`;
+                        
+                        // 創建標準化的隊伍組合鍵值（不考慮順序）
+                        const teams = [team1, team2].sort().join(' vs ');
                         
                         // 如果這個隊伍組合還沒有顯示過，創建按鈕
-                        if (!shownMatches.has(matchKey)) {
-                            shownMatches.add(matchKey);
+                        if (!shownMatches.has(teams)) {
+                            shownMatches.add(teams);
                             const button = document.createElement('button');
                             button.className = 'match-button';
                             button.setAttribute('data-stage', stage.split(' ')[0]);
-                            button.textContent = matchKey;
+                            button.textContent = `${team1} vs ${team2}`;
                             button.onclick = () => showMatchDetails(matchElement, matchElements);
                             matchButtons.appendChild(button);
                         }
@@ -1257,12 +1271,14 @@
                 table.style.display = 'none';
             });
 
-            // 只顯示當前系列賽的比賽表格
+            // 只顯示當前系列賽的比賽表格（不考慮隊伍順序）
             allMatches.forEach(match => {
                 const currentTeam1 = match.querySelector('.team1-column .team-name').textContent.trim();
                 const currentTeam2 = match.querySelector('.team2-column .team-name').textContent.trim();
-                if ((currentTeam1 === team1 && currentTeam2 === team2) || 
-                    (currentTeam1 === team2 && currentTeam2 === team1)) {
+                const currentTeams = [currentTeam1, currentTeam2].sort();
+                const selectedTeams = [team1, team2].sort();
+                
+                if (currentTeams.join('') === selectedTeams.join('')) {
                     match.style.display = 'block';
                 }
             });
