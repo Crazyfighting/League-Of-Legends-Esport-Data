@@ -1420,9 +1420,17 @@
                 const isInitialLoad = !document.querySelector('.stage-buttons').classList.contains('fade-in');
                 
                 if (isInitialLoad) {
-                    // 初始載入時直接顯示
+                    // 初始載入時直接顯示，不使用任何動畫
                     document.querySelector('.stage-buttons').style.display = 'flex';
+                    document.querySelector('.stage-buttons').style.opacity = '1';
+                    document.querySelector('.stage-buttons').style.transform = 'none';
                     document.querySelector('.back-button').style.display = 'none';
+                    
+                    // 確保所有按鈕都直接顯示
+                    document.querySelectorAll('.stage-button').forEach(button => {
+                        button.style.opacity = '1';
+                        button.style.transform = 'none';
+                    });
                 } else {
                     // 從其他頁面返回時使用淡入效果
                     const elements = [
