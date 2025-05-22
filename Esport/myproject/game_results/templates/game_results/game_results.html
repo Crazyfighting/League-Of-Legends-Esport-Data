@@ -987,7 +987,7 @@
             padding: 20px;
             font-size: 1.5em;
             background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-            border: 2px solid var(--gold-color);
+            border: 1px solid var(--gold-color);
             border-radius: 15px;
             color: var(--gold-color);
             cursor: pointer;
@@ -996,7 +996,7 @@
             font-weight: bold;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
             text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
             width: 100%;
             margin-bottom: 15px;
@@ -1004,7 +1004,7 @@
 
         .round-button:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
             background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
         }
 
@@ -1034,14 +1034,15 @@
         .round-button[data-round="3"],
         .round-button[data-round="4"],
         .round-button[data-round="5"] {
-            border-width: 2px;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            border-width: 1px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
         }
 
         /* 移除 Round 5 的動畫效果 */
         .round-button[data-round="5"] {
             animation: none;
         }
+
 
         /* 新增對局按鈕樣式 */
         .match-button {
@@ -1075,8 +1076,6 @@
             width: 40px;
             height: 40px;
             object-fit: contain;
-            border-radius: 50%;
-            border: 2px solid var(--gold-color);
         }
 
         .vs-text {
@@ -1210,17 +1209,6 @@
             animation: round5-glow 2s infinite;
         }
 
-        @keyframes round5-glow {
-            0% {
-                box-shadow: 0 0 35px rgba(255, 215, 0, 0.7);
-            }
-            50% {
-                box-shadow: 0 0 45px rgba(255, 215, 0, 0.9);
-            }
-            100% {
-                box-shadow: 0 0 35px rgba(255, 215, 0, 0.7);
-            }
-        }
 
         .match-table-wrapper {
             transform: scale(0.6);
