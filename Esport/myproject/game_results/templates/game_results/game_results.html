@@ -1057,6 +1057,91 @@
             box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
             background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
         }
+
+        /* 修改 Round 按鈕樣式 */
+        .round-button {
+            padding: 20px;
+            font-size: 1.5em;
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            border: 2px solid var(--gold-color);
+            border-radius: 15px;
+            color: var(--gold-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .round-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
+        }
+
+        .round-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 215, 0, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .round-button:hover::before {
+            left: 100%;
+        }
+
+        /* 為不同輪次添加不同效果 */
+        .round-button[data-round="1"] {
+            border-width: 2px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .round-button[data-round="2"] {
+            border-width: 2px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .round-button[data-round="3"] {
+            border-width: 2px;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .round-button[data-round="4"] {
+            border-width: 3px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .round-button[data-round="5"] {
+            border-width: 3px;
+            box-shadow: 0 0 35px rgba(255, 215, 0, 0.7);
+            animation: round5-glow 2s infinite;
+        }
+
+        @keyframes round5-glow {
+            0% {
+                box-shadow: 0 0 35px rgba(255, 215, 0, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 45px rgba(255, 215, 0, 0.9);
+            }
+            100% {
+                box-shadow: 0 0 35px rgba(255, 215, 0, 0.7);
+            }
+        }
     </style>
 </head>
 <body>
@@ -1203,6 +1288,7 @@
             for (let i = 1; i <= 5; i++) {
                 const button = document.createElement('button');
                 button.className = 'round-button';
+                button.setAttribute('data-round', i);
                 button.textContent = `Round ${i}`;
                 button.onclick = () => showMainEventMatches(i);
                 roundButtons.appendChild(button);
@@ -1283,12 +1369,14 @@
                 }
             });
 
-            // 獲取原始標題並移除 Game1、Game2 等字樣
+            // 獲取原始標題並移除最後兩個非空白子字串
             let originalTitle = matchElement.querySelector('.match-header').textContent;
-            // 移除 "Game X" 或 "GameX" 格式的字樣，包括前面的空格
-            originalTitle = originalTitle.replace(/\s*Game\s*\d+$/, '').trim();
+            // 分割字串並移除最後兩個非空白子字串
+            let titleParts = originalTitle.split(/\s+/).filter(part => part.trim() !== '');
+            titleParts = titleParts.slice(0, -2);
+            originalTitle = titleParts.join(' ');
 
-            // 確保每個對局都有標題和返回按鈕
+            // 在頁面頂部添加標題和返回按鈕
             let header = document.querySelector('.match-details-header');
             if (!header) {
                 header = document.createElement('div');
@@ -1296,39 +1384,22 @@
                 matchContent.insertBefore(header, matchContent.firstChild);
             }
 
-            // 更新標題和返回按鈕
             header.innerHTML = `
                 <div class="match-details-title">${originalTitle}</div>
                 <button class="back-button" onclick="goBack()">返回</button>
             `;
             header.style.display = 'block';
-
-            // 確保所有顯示的對局都有標題和返回按鈕
-            matchContent.querySelectorAll('.match-table').forEach(table => {
-                if (table.style.display !== 'none') {
-                    let tableHeader = table.querySelector('.match-details-header');
-                    if (!tableHeader) {
-                        tableHeader = document.createElement('div');
-                        tableHeader.className = 'match-details-header';
-                        table.insertBefore(tableHeader, table.firstChild);
-                    }
-                    tableHeader.innerHTML = `
-                        <div class="match-details-title">${originalTitle}</div>
-                        <button class="back-button" onclick="goBack()">返回</button>
-                    `;
-                    tableHeader.style.display = 'block';
-                }
-            });
         }
 
         function goBack() {
             if (currentMatch) {
                 // 如果在詳細對局頁面，返回比賽列表
                 currentMatch = null;
-                // 移除所有標題和返回按鈕
-                document.querySelectorAll('.match-details-header').forEach(header => {
+                // 移除標題和返回按鈕
+                const header = document.querySelector('.match-details-header');
+                if (header) {
                     header.style.display = 'none';
-                });
+                }
                 document.querySelector('.landing-page').style.display = 'block';
                 document.querySelectorAll('.tab-content').forEach(content => {
                     content.style.display = 'none';
