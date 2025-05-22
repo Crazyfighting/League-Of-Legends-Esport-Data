@@ -982,7 +982,68 @@
             box-shadow: 0 0 35px rgba(255, 215, 0, 0.7);
         }
 
-        /* 比賽按鈕樣式 */
+        /* 修改 Round 按鈕樣式，使其與 Play-in 按鈕一致 */
+        .round-button {
+            padding: 20px;
+            font-size: 1.5em;
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            border: 2px solid var(--gold-color);
+            border-radius: 15px;
+            color: var(--gold-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .round-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
+        }
+
+        .round-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 215, 0, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .round-button:hover::before {
+            left: 100%;
+        }
+
+        /* 移除所有 Round 按鈕的特殊效果，但保持基本樣式 */
+        .round-button[data-round="1"],
+        .round-button[data-round="2"],
+        .round-button[data-round="3"],
+        .round-button[data-round="4"],
+        .round-button[data-round="5"] {
+            border-width: 2px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        /* 移除 Round 5 的動畫效果 */
+        .round-button[data-round="5"] {
+            animation: none;
+        }
+
+        /* 新增對局按鈕樣式 */
         .match-button {
             padding: 20px;
             font-size: 1.5em;
@@ -998,12 +1059,30 @@
             overflow: hidden;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
             text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
         }
 
         .match-button:hover {
             transform: translateY(-5px);
             box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
             background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
+        }
+
+        .team-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 50%;
+            border: 2px solid var(--gold-color);
+        }
+
+        .vs-text {
+            font-size: 0.8em;
+            color: var(--gold-color);
+            margin: 0 10px;
         }
 
         /* 詳細對局頁面的標題和返回按鈕容器 */
@@ -1350,6 +1429,8 @@
                     matchElements.forEach(matchElement => {
                         const team1 = matchElement.querySelector('.team1-column .team-name').textContent.trim();
                         const team2 = matchElement.querySelector('.team2-column .team-name').textContent.trim();
+                        const team1Image = matchElement.style.getPropertyValue('--team1-image').replace(/url\(['"](.+)['"]\)/, '$1');
+                        const team2Image = matchElement.style.getPropertyValue('--team2-image').replace(/url\(['"](.+)['"]\)/, '$1');
                         
                         // 創建標準化的隊伍組合鍵值（不考慮順序）
                         const teams = [team1, team2].sort().join(' vs ');
@@ -1360,7 +1441,14 @@
                             const button = document.createElement('button');
                             button.className = 'match-button';
                             button.setAttribute('data-stage', stage.split(' ')[0]);
-                            button.textContent = `${team1} vs ${team2}`;
+                            
+                            // 創建按鈕內容
+                            button.innerHTML = `
+                                <img src="${team1Image}" alt="${team1}" class="team-logo">
+                                <span class="vs-text">VS</span>
+                                <img src="${team2Image}" alt="${team2}" class="team-logo">
+                            `;
+                            
                             button.onclick = () => showMatchDetails(matchElement, matchElements, stage);
                             matchButtons.appendChild(button);
                         }
