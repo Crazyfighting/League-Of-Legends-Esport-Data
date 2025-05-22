@@ -895,12 +895,15 @@
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
 
-        .stage-buttons {
+        .stage-buttons,
+        .round-buttons,
+        .match-buttons {
             display: flex;
             flex-direction: column;
             gap: 20px;
             max-width: 600px;
             margin: 0 auto;
+            padding: 20px;
         }
 
         /* 基礎按鈕樣式 */
@@ -981,87 +984,52 @@
 
         /* 比賽按鈕樣式 */
         .match-button {
-            padding: 15px;
-            font-size: 1.2em;
+            padding: 20px;
+            font-size: 1.5em;
             background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-            border: 1px solid var(--gold-color);
-            border-radius: 10px;
+            border: 2px solid var(--gold-color);
+            border-radius: 15px;
             color: var(--gold-color);
             cursor: pointer;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
             position: relative;
             overflow: hidden;
-        }
-
-        /* 根據當前階段設置比賽按鈕樣式 */
-        .match-button[data-stage="PlayIn"] {
-            border-width: 1px;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
-        }
-
-        .match-button[data-stage="MainEvent"] {
-            border-width: 2px;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
         }
 
-        .match-button[data-stage="QuarterFinals"] {
-            border-width: 2px;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-        }
-
-        .match-button[data-stage="SemiFinals"] {
-            border-width: 3px;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-        }
-
-        .match-button[data-stage="Finals"] {
-            border-width: 3px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-            animation: finals-glow 2s infinite;
-        }
-
-        /* 比賽按鈕懸浮效果 */
         .match-button:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
             background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
         }
 
-        .match-button[data-stage="PlayIn"]:hover {
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        /* 詳細對局頁面的標題和返回按鈕容器 */
+        .match-details-header {
+            display: none;
+            padding: 20px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid var(--gold-color);
+            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .match-button[data-stage="MainEvent"]:hover {
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-        }
-
-        .match-button[data-stage="QuarterFinals"]:hover {
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-        }
-
-        .match-button[data-stage="SemiFinals"]:hover {
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-        }
-
-        .match-button[data-stage="Finals"]:hover {
-            box-shadow: 0 0 35px rgba(255, 215, 0, 0.7);
-        }
-
-        /* 決賽按鈕的發光動畫 */
-        @keyframes finals-glow {
-            0% {
-                box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-            }
-            50% {
-                box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
-            }
-            100% {
-                box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-            }
+        .match-details-title {
+            color: var(--gold-color);
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            font-weight: bold;
         }
 
         /* 修改返回按鈕樣式 */
         .back-button {
-            display: none;
+            display: inline-block;
             padding: 12px 25px;
             font-size: 1.1em;
             background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
@@ -1070,7 +1038,6 @@
             color: var(--gold-color);
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 20px auto;
             position: relative;
             overflow: hidden;
             text-transform: uppercase;
@@ -1089,90 +1056,6 @@
             transform: translateX(-5px);
             box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
             background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
-        }
-
-        /* 增強按鈕特效 */
-        .stage-button[onclick*="Finals"] {
-            border-width: 3px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-            animation: finals-glow 2s infinite;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-
-        .stage-button[onclick*="SemiFinals"] {
-            border-width: 3px;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-            animation: semifinals-glow 3s infinite;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
-        }
-
-        .stage-button[onclick*="QuarterFinals"] {
-            border-width: 2px;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-            text-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
-        }
-
-        .stage-button[onclick*="MainEvent"] {
-            border-width: 2px;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-        }
-
-        .stage-button[onclick*="PlayIn"] {
-            border-width: 1px;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
-            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-        }
-
-        /* 新增動畫效果 */
-        @keyframes finals-glow {
-            0% {
-                box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-                text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
-                text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-            }
-            100% {
-                box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-                text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            }
-        }
-
-        @keyframes semifinals-glow {
-            0% {
-                box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-                text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
-            }
-            50% {
-                box-shadow: 0 0 35px rgba(255, 215, 0, 0.7);
-                text-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
-            }
-            100% {
-                box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-                text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
-            }
-        }
-
-        /* 詳細對局頁面的返回按鈕容器 */
-        .match-details-header {
-            display: none;
-            padding: 20px;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.5);
-            border-bottom: 1px solid var(--gold-color);
-            margin-bottom: 20px;
-        }
-
-        .match-details-title {
-            color: var(--gold-color);
-            font-size: 1.5em;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
     </style>
 </head>
@@ -1326,9 +1209,8 @@
             matches.forEach(match => {
                 if (match.id === stage) {
                     const matchElements = match.querySelectorAll('.match-table');
-                    // 只顯示第一場比賽的按鈕（同一系列賽）
-                    if (matchElements.length > 0) {
-                        const matchElement = matchElements[0];
+                    // 顯示所有比賽按鈕
+                    matchElements.forEach(matchElement => {
                         const button = document.createElement('button');
                         button.className = 'match-button';
                         button.setAttribute('data-stage', stage.split(' ')[0]);
@@ -1337,24 +1219,28 @@
                         button.textContent = `${team1} vs ${team2}`;
                         button.onclick = () => showMatchDetails(matchElement);
                         matchButtons.appendChild(button);
-                    }
+                    });
                 }
             });
         }
 
         function showMatchDetails(matchElement) {
+            currentMatch = matchElement;
             document.querySelector('.landing-page').style.display = 'none';
             const matchContent = matchElement.closest('.tab-content');
             matchContent.style.display = 'block';
 
             // 添加詳細對局頁面的標題和返回按鈕
-            const header = document.createElement('div');
-            header.className = 'match-details-header';
+            let header = document.querySelector('.match-details-header');
+            if (!header) {
+                header = document.createElement('div');
+                header.className = 'match-details-header';
+                matchContent.insertBefore(header, matchContent.firstChild);
+            }
             header.innerHTML = `
                 <div class="match-details-title">${matchElement.querySelector('.match-header').textContent}</div>
                 <button class="back-button" onclick="goBack()">返回</button>
             `;
-            matchContent.insertBefore(header, matchContent.firstChild);
             header.style.display = 'block';
         }
 
@@ -1362,7 +1248,10 @@
             if (currentMatch) {
                 // 如果在詳細對局頁面，返回比賽列表
                 currentMatch = null;
-                document.querySelector('.match-details-header').style.display = 'none';
+                const header = document.querySelector('.match-details-header');
+                if (header) {
+                    header.style.display = 'none';
+                }
                 document.querySelector('.landing-page').style.display = 'block';
                 document.querySelectorAll('.tab-content').forEach(content => {
                     content.style.display = 'none';
