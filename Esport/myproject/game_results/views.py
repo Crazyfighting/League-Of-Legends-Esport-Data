@@ -13,7 +13,7 @@ from collections import defaultdict
 BASE_DIR = settings.BASE_DIR
 
 CHAMPION_IMAGE_DIR = Path("champion")
-def get_filename_url_to_open(site: EsportsClient, filename, team=None, width=None):
+def get_filename_url_to_open(site: EsportsClient, filename, team=None, player=None, width=None):
     try:
         print(f"\n嘗試獲取圖片: {filename}")
         response = site.client.api(
@@ -33,7 +33,7 @@ def get_filename_url_to_open(site: EsportsClient, filename, team=None, width=Non
             team_image_dir = os.path.join(BASE_DIR, 'static', 'team_images')
             os.makedirs(team_image_dir, exist_ok=True)
             
-            # 保存圖片
+            # 保存隊伍圖片
             team_image_path = os.path.join(team_image_dir, f'{team}.png')
             print(f"保存隊伍圖片到: {team_image_path}")
             
@@ -43,6 +43,23 @@ def get_filename_url_to_open(site: EsportsClient, filename, team=None, width=Non
                 return f'/static/team_images/{team}.png'
             except Exception as e:
                 print(f"保存隊伍圖片時出錯: {e}")
+                return None
+        
+        if player:
+            # 確保目錄存在
+            player_image_dir = os.path.join(BASE_DIR, 'static', 'player_images')
+            os.makedirs(player_image_dir, exist_ok=True)
+            
+            # 保存選手圖片
+            player_image_path = os.path.join(player_image_dir, f'{player}.png')
+            print(f"保存選手圖片到: {player_image_path}")
+            
+            try:
+                urllib.request.urlretrieve(url, player_image_path)
+                print(f"成功保存選手圖片: {player}")
+                return f'/static/player_images/{player}.png'
+            except Exception as e:
+                print(f"保存選手圖片時出錯: {e}")
                 return None
                 
         return url
@@ -82,9 +99,57 @@ def get_stage_from_gameid(game_id):
     """根據遊戲ID判斷比賽階段"""
     # 如果已經快取過，直接返回
     if game_id in stage_cache:
-        return stage_cache[game_id]
+        cached_stage = stage_cache[game_id]
+        # 如果快取的是字串，轉換為字典格式
+        if isinstance(cached_stage, str):
+            stage = {
+                'type': cached_stage,
+                'format': None,
+                'number': None,
+                'display': cached_stage
+            }
+            stage_cache[game_id] = stage
+            return stage
+        return cached_stage
 
     game_id = game_id.lower()
+    
+    # 檢查是否為 Worlds Qualifying Series
+    if 'worlds qualifying series' in game_id:
+        stage = {
+            'type': 'PlayIn',
+            'format': None,
+            'number': None,
+            'display': 'PlayIn'
+        }
+        if stage['display'] not in printed_stages:
+            print(f"找到 {stage['display']}")
+            printed_stages.add(stage['display'])
+        stage_cache[game_id] = stage
+        return stage
+    
+    # 檢查是否為 tiebreaker
+    if 'tiebreaker' in game_id:
+        # 判斷是 Play-in 還是 Main Event 的 tiebreaker
+        if 'play-in' in game_id or 'playin' in game_id:
+            stage = {
+                'type': 'PlayIn',
+                'format': 'Tiebreaker',
+                'number': None,
+                'display': 'PlayIn Tiebreaker'
+            }
+        else:
+            stage = {
+                'type': 'MainEvent',
+                'format': 'Tiebreaker',
+                'number': None,
+                'display': 'MainEvent Tiebreaker'
+            }
+        if stage['display'] not in printed_stages:
+            print(f"找到 {stage['display']}")
+            printed_stages.add(stage['display'])
+        stage_cache[game_id] = stage
+        return stage
     
     # 定義階段對應表
     stage_mapping = {
@@ -99,40 +164,76 @@ def get_stage_from_gameid(game_id):
     
     # 先檢查是否為 Play-In
     if 'play-in' in game_id or 'playin' in game_id:
-        stage = 'PlayIn'
-        if stage not in printed_stages:
-            print(f"找到 {stage}")
-            printed_stages.add(stage)
+        stage = {
+            'type': 'PlayIn',
+            'format': None,
+            'number': None,
+            'display': 'PlayIn'
+        }
+        if stage['display'] not in printed_stages:
+            print(f"找到 {stage['display']}")
+            printed_stages.add(stage['display'])
         stage_cache[game_id] = stage
         return stage
     
-    # 檢查是否為 MainEvent Round
-    round_match = re.search(r'round\s*(\d+)', game_id)
+    # 檢查是否為 MainEvent Round 或 Day
+    round_match = re.search(r'main\s*event.*?round\s*(\d+)', game_id, re.IGNORECASE)
+    day_match = re.search(r'main\s*event.*?day\s*(\d+)', game_id, re.IGNORECASE)
+    
     if round_match:
-        stage = f'MainEvent Round {round_match.group(1)}'
-        if stage not in printed_stages:
-            print(f"找到 {stage}")
-            printed_stages.add(stage)
+        stage = {
+            'type': 'MainEvent',
+            'format': 'Round',
+            'number': round_match.group(1),
+            'display': f'MainEvent Round {round_match.group(1)}'
+        }
+        if stage['display'] not in printed_stages:
+            print(f"找到 {stage['display']}")
+            printed_stages.add(stage['display'])
+        stage_cache[game_id] = stage
+        return stage
+    elif day_match:
+        stage = {
+            'type': 'MainEvent',
+            'format': 'Day',
+            'number': day_match.group(1),
+            'display': f'MainEvent Day {day_match.group(1)}'
+        }
+        if stage['display'] not in printed_stages:
+            print(f"找到 {stage['display']}")
+            printed_stages.add(stage['display'])
         stage_cache[game_id] = stage
         return stage
     
     # 檢查其他階段
-    for key, stage in stage_mapping.items():
+    for key, stage_name in stage_mapping.items():
         if key in game_id:
             # 確保 final 不會被 quarter 或 semi 覆蓋
             if key == 'final' and ('quarter' in game_id or 'semi' in game_id):
                 continue
-            if stage not in printed_stages:
-                print(f"找到 {stage}")
-                printed_stages.add(stage)
+            stage = {
+                'type': stage_name,
+                'format': None,
+                'number': None,
+                'display': stage_name
+            }
+            if stage['display'] not in printed_stages:
+                print(f"找到 {stage['display']}")
+                printed_stages.add(stage['display'])
             stage_cache[game_id] = stage
             return stage
     
     # 如果都沒有匹配到，返回 Unknown
-    stage = 'Unknown'
-    if stage not in printed_stages:
-        print(f"找到 {stage}")
-        printed_stages.add(stage)
+    stage = {
+        'type': 'Unknown',
+        'format': None,
+        'number': None,
+        'display': 'Unknown'
+    }
+    print(f"\n無法識別的 game_id: {game_id}")
+    if stage['display'] not in printed_stages:
+        print(f"找到 {stage['display']}")
+        printed_stages.add(stage['display'])
     stage_cache[game_id] = stage
     return stage
 
@@ -147,18 +248,42 @@ def clean_image_path(path, is_team=False):
 
 def game_results(request):
     site = EsportsClient("lol")
-    tournaments = lp.get_tournaments('International', year=2024)
+    print("\n=== 開始獲取比賽資料 ===")
+    print("嘗試獲取 2024 年的國際比賽...")
+    tournaments = lp.get_tournaments('International', year=2021)
+    print(f"獲取到的比賽數量: {len(tournaments) if tournaments else 0}")
+    
+    if tournaments:
+        print("\n2024 年的比賽列表:")
+        for t in tournaments:
+            print(f"- {t.name}")
+    
+    if not tournaments:
+        print("沒有找到 2024 年的比賽，嘗試獲取 2023 年的比賽...")
+        tournaments = lp.get_tournaments('International', year=2023)
+        print(f"2023 年獲取到的比賽數量: {len(tournaments) if tournaments else 0}")
+        if tournaments:
+            print("\n2023 年的比賽列表:")
+            for t in tournaments:
+                print(f"- {t.name}")
+    
     if not tournaments:
         return render(request, 'game_results/game_results.html', {'matches': []})
 
-    # 印出所有比賽名稱
-    print("\n=== 所有可用的比賽 ===")
-    for i, t in enumerate(tournaments):
-        print(f"{i}: {t.name}")
-
-    tournament = tournaments[3]
-    tournament_name = tournament.name
-    print(f"\n選定比賽：{tournament_name}")
+    # 過濾出 Worlds 的比賽
+    world_tournaments = [t for t in tournaments if "Worlds" in t.name]
+    print(f"\n過濾後的 Worlds 比賽數量: {len(world_tournaments)}")
+    print("找到的 Worlds 比賽:")
+    for t in world_tournaments:
+        print(f"- {t.name}")
+    
+    # 動態生成查詢條件
+    tournament_conditions = []
+    for t in world_tournaments:
+        tournament_conditions.append(f'SG.Tournament LIKE "{t.name}%"')
+    
+    where_condition = ' OR '.join(tournament_conditions)
+    print(f"\n生成的查詢條件: {where_condition}")
 
     # 載入圖片快取
     image_cache_path = os.path.join(BASE_DIR, "player_images.json")
@@ -173,9 +298,6 @@ def game_results(request):
     if os.path.exists(team_image_cache_path):
         with open(team_image_cache_path, "r", encoding="utf-8") as f:
             team_image_cache = json.load(f)
-        print("\n現有的隊伍圖片快取：")
-        for team, path in team_image_cache.items():
-            print(f"{team}: {path}")
     else:
         team_image_cache = {}
 
@@ -183,13 +305,14 @@ def game_results(request):
     broad_query = site.cargo_client.query(
         tables="ScoreboardGames=SG, ScoreboardPlayers=SP, Players=P, MatchScheduleGame=MSG, MatchSchedule=MS",
         join_on="SG.GameId=SP.GameId, SP.Link=P.OverviewPage, SG.GameId=MSG.GameId, MSG.MatchId=MS.MatchId, MSG.MVP=MS.MVP",
-        fields="SG.Team1, SG.Team2, SP.Champion, SP.Role, SP.Team, P.Player=Player, SG.Winner, SG.Gamename, SG.GameId, SG.OverviewPage, MSG.MVP, SG.Team1Kills, SG.Team2Kills, SP.Kills, SP.Deaths, SP.Assists, SP.Runes, SP.SummonerSpells",
-        where='SG.Tournament LIKE "Worlds 2024%" OR SG.Tournament LIKE "Worlds 2024 Play-In%"',
-        order_by="SG.GameId ASC",
+        fields="SG.Team1, SG.Team2, SP.Champion, SP.Role, SP.Team, P.Player=Player, SG.Winner, SG.Gamename, MSG.GameId, SG.OverviewPage, MSG.MVP, SG.Team1Kills, SG.Team2Kills, SP.Kills, SP.Deaths, SP.Assists, SP.Runes, SP.SummonerSpells, MS.MatchDay, MSG.MatchId, SG.MatchId",
+        where=where_condition,
+        order_by="MSG.GameId ASC",
     )
 
     role_order = ["Top", "Jungle", "Mid", "Bot", "Support"]
     match_map = {}
+    processed_game_ids = set()  # 用於追蹤已處理的 game_id
 
     # 將查詢結果轉換為列表
     query_results = list(broad_query)
@@ -200,21 +323,95 @@ def game_results(request):
     tournament_names = set()
     teams = set()
     
+    print("\n=== 處理比賽資料 ===")
+    print("\n=== Play-in 階段的 GameId ===")
+    printed_matches = set()  # 用於追蹤已印出的比賽
+    playin_matches = []
+
     for row in query_results:
-        game_ids.add(row['GameId'])
+        game_id = row['GameId']
+        print(f"處理 GameId: {game_id}")  # 添加調試輸出
+        stage = get_stage_from_gameid(game_id)
+        if stage['type'] == 'PlayIn':
+            # 創建比賽資訊的組合字串
+            match_info = f"{game_id}_{row.get('Team1', 'N/A')}_{row.get('Team2', 'N/A')}"
+            # 如果這個組合還沒印出過，就加入列表
+            if match_info not in printed_matches:
+                # 解析 GameId 的結構
+                parts = game_id.split('_')
+                round_num = 0
+                series_num = 0
+                game_num = 0
+                
+                # 檢查是否為 Worlds Qualifying Series
+                is_qualifying = 'Worlds Qualifying Series' in game_id
+                
+                # 如果不是 Qualifying Series，解析數字
+                if not is_qualifying and len(parts) >= 3:
+                    try:
+                        round_num = int(parts[-3])
+                        series_num = int(parts[-2])
+                        game_num = int(parts[-1])
+                    except ValueError:
+                        pass
+                
+                playin_matches.append({
+                    'game_id': game_id,
+                    'team1': row.get('Team1', 'N/A'),
+                    'team2': row.get('Team2', 'N/A'),
+                    'is_qualifying': is_qualifying,
+                    'round_num': round_num,
+                    'series_num': series_num,
+                    'game_num': game_num
+                })
+                printed_matches.add(match_info)
+        if game_id in processed_game_ids:
+            continue
+            
+        processed_game_ids.add(game_id)
+        game_ids.add(game_id)
         tournament_names.add(row['OverviewPage'])
         teams.add(row['Team1'])
         teams.add(row['Team2'])
 
-    print("\n找到的隊伍：")
-    for team in sorted(teams):
-        print(f"- {team}")
+        # 決定勝方隊伍名稱
+        winner_team = row['Team1'] if str(row['Winner']) == '1' else row['Team2']
+        match_map[game_id] = {
+            "GameId": game_id,  # 確保加入 GameId
+            "Tournament": f'{row["OverviewPage"].split("/")[0]} - {get_stage_from_gameid(game_id)["display"]} {row["Gamename"].split(" - ")[0]}',
+            "Team1": row['Team1'],
+            "Team2": row['Team2'],
+            "Team1Image": team_image_cache.get(row['Team1'], ""),
+            "Team2Image": team_image_cache.get(row['Team2'], ""),
+            "Tab": get_stage_from_gameid(game_id)['display'],
+            "Winner": row['Winner'],
+            "WinnerTeam": winner_team,
+            "Team1Points": row.get('Team1Kills'),
+            "Team2Points": row.get('Team2Kills'),
+            "MVP": row.get('MVP', ''),
+            "DateTime": row.get('MatchDay', ''),
+            "Players1_by_role": {},
+            "Players2_by_role": {}
+        }
 
-    print("\n找到的比賽階段：")
-    for row in query_results:
-        game_id = row["GameId"]
+    # 排序：先排 Worlds Qualifying Series，然後按照 Round、Series、Game 排序，最後是 Play-In Qualifiers
+    playin_matches.sort(key=lambda x: (
+        not ('Worlds Qualifying Series' in x['game_id']),  # Worlds Qualifying Series 排在最前面
+        x['round_num'],
+        x['series_num'],
+        x['game_num'],
+        'Play-In_Qualifiers' in x['game_id'] # Play-In Qualifiers 排在最下面
+    ))
+
+    # 印出排序後的結果
+    for match in playin_matches:
+        print(f"GameId: {match['game_id']}")
+        print(f"Team1: {match['team1']}")
+        print(f"Team2: {match['team2']}")
+        print("---")
+
+    for game_id in sorted(game_ids):
         tab = get_stage_from_gameid(game_id)
-        print(f"GameId: {game_id}, Stage: {tab}")
 
     # 獲取所有隊伍的圖片
     for team in teams:
@@ -228,10 +425,6 @@ def game_results(request):
             else:
                 print(f"無法獲取 {team} 的圖片")
 
-    print("\n更新後的隊伍圖片快取：")
-    for team, path in team_image_cache.items():
-        print(f"{team}: {path}")
-
     # 寫回圖片快取
     with open(team_image_cache_path, "w", encoding="utf-8") as f:
         json.dump(team_image_cache, f, ensure_ascii=False, indent=2)
@@ -240,17 +433,17 @@ def game_results(request):
     stage_counts = {}
     for row in query_results:
         game_id = row["GameId"]
-        tab = get_stage_from_gameid(game_id)
-        stage_counts[tab] = stage_counts.get(tab, 0) + 1
+        stage = get_stage_from_gameid(game_id)
+        stage_counts[stage['display']] = stage_counts.get(stage['display'], 0) + 1
 
     print("\n各階段比賽數量：")
     for stage, count in stage_counts.items():
-        print(f"{stage}: {count} 場")
+        print(f"{stage}: {count/10} 場")
     
     for row in query_results:
         game_id = row["GameId"]
         gamename = row["Gamename"]
-        tab = get_stage_from_gameid(game_id)
+        stage = get_stage_from_gameid(game_id)
         
         player_name = row["Player"]
         role = row["Role"]
@@ -263,9 +456,10 @@ def game_results(request):
         # 使用 ScoreboardGames 的 Team1Kills 和 Team2Kills
         team1_points = row.get("Team1Kills")
         team2_points = row.get("Team2Kills")
+        # 獲取比賽日期
+        match_day = row.get("MatchDay", "")
 
-
-        tournament_info = f'{overview.split("/")[0]} - {tab} {gamename}'
+        tournament_info = f'{overview.split("/")[0]} - {stage["display"]} {gamename} {match_day}'
 
         # 抓選手圖片（快取）
         if player_name not in player_image_cache:
@@ -279,29 +473,10 @@ def game_results(request):
             )
             if r:
                 filename = r[0]["FileName"]
-                url = get_filename_url_to_open(site, filename)
+                url = get_filename_url_to_open(site, filename, player=player_name)
                 player_image_cache[player_name] = url
             else:
                 player_image_cache[player_name] = ""
-
-        if game_id not in match_map:
-            # 決定勝方隊伍名稱
-            winner_team = team1 if str(row["Winner"]) == "1" else team2
-            match_map[game_id] = {
-                "Tournament": tournament_info,
-                "Team1": team1,
-                "Team2": team2,
-                "Team1Image": team_image_cache.get(team1, ""),
-                "Team2Image": team_image_cache.get(team2, ""),
-                "Tab": tab,
-                "Winner": row["Winner"],
-                "WinnerTeam": winner_team,
-                "Team1Points": team1_points,
-                "Team2Points": team2_points,
-                "MVP": mvp_player,
-                "Players1_by_role": {},
-                "Players2_by_role": {}
-            }
 
         match = match_map[game_id]
 
@@ -349,41 +524,59 @@ def game_results(request):
     for match in match_map.values():
         teams = sorted([match["Team1"], match["Team2"]])
         match["MatchGroup"] = f"{teams[0]} vs {teams[1]}"
-        # 從 Tournament 中提取 Game 編號
-        game_number_match = re.search(r'Game (\d+)', match["Tournament"])
-        match["GameNumber"] = int(game_number_match.group(1)) if game_number_match else 0
+        # 從 GameId 中提取系列賽資訊
+        game_id = match["GameId"]
+        match["SeriesId"] = game_id.split('_')[0]  # 取 GameId 的第一部分作為系列賽 ID
+        
+        # 解析 GameId 的結構
+        parts = game_id.split('_')
+        match["is_qualifying"] = 'Worlds Qualifying Series' in game_id
+        match["round_num"] = 0
+        match["series_num"] = 0
+        match["game_num"] = 0
+        
+        if not match["is_qualifying"] and len(parts) >= 3:
+            try:
+                match["round_num"] = int(parts[-3])
+                match["series_num"] = int(parts[-2])
+                match["game_num"] = int(parts[-1])
+            except ValueError:
+                pass
 
     # 標記每組對戰的最後一場
     group_to_games = defaultdict(list)
     for match in match_map.values():
-        # 使用隊伍名稱和 Tournament 作為分組鍵
-        group_key = f"{match['MatchGroup']}_{match['Tournament'].split(' - ')[0]}"
+        # 使用隊伍名稱和 SeriesId 作為分組鍵
+        group_key = f"{match['MatchGroup']}_{match['SeriesId']}"
         group_to_games[group_key].append(match)
 
     print("\n=== 對戰分組資訊 ===")
     for group, games in group_to_games.items():
-        print(f"\n分組: {group}")
-        # 找出該系列賽中 Game 編號最大的場次
-        max_game = max(games, key=lambda m: m["GameNumber"])
+        # 找出該系列賽中最後一場
+        max_game = max(games, key=lambda m: m["GameId"])
         for m in games:
             # 使用 get_stage_from_gameid 來獲取階段
-            stage = get_stage_from_gameid(m["Tournament"])
-            m["is_last_game_in_group"] = (m["GameNumber"] == max_game["GameNumber"])
+            stage = get_stage_from_gameid(m["GameId"])
+            m["is_last_game_in_group"] = (m["GameId"] == max_game["GameId"])
             # 只有 QuarterFinals、SemiFinals 和 Finals 的最後一場使用動畫效果
-            m["use_animation"] = m["is_last_game_in_group"] and stage in ["QuarterFinals", "SemiFinals", "Finals"]
-            print(f"比賽: {m['Tournament']}")
-            print(f"  Game編號: {m['GameNumber']}")
-            print(f"  階段: {stage}")
-            print(f"  是否最後一場: {m['is_last_game_in_group']}")
-            print(f"  是否使用動畫: {m['use_animation']}")
+            m["use_animation"] = m["is_last_game_in_group"] and stage['type'] in ["QuarterFinals", "SemiFinals", "Finals"]
+            # 設置顯示用的階段名稱
+            m["Tab"] = stage['display']
+            # 設置階段格式和編號（用於 HTML 顯示）
+            m["stage_format"] = stage['format']
+            m["stage_number"] = stage['number']
 
-    # 排序：tab → 對戰組合 → Game 名稱
+    # 排序：tab → is_qualifying → round_num → series_num → game_num
     matches = sorted(
         match_map.values(),
         key=lambda m: (
             m["Tab"],
-            m["MatchGroup"],
-            m["Tournament"]
+            not ('Worlds Qualifying Series' in m["GameId"]),  # Worlds Qualifying Series 排在最前面
+            m["round_num"],
+            m["series_num"],
+            m["game_num"],
+            'Play-In_Elimination' in m["GameId"],  # Elimination 排在 Qualifiers 之前
+            not ('Play-In_Qualifiers' in m["GameId"])  # Qualifiers 排在最下面
         )
     )
 
@@ -398,16 +591,6 @@ def game_results(request):
             player['champion'] = clean_image_path(player['champion'])
             player['rune'] = clean_image_path(player['rune'])
             player['summoner_spells'] = [clean_image_path(spell) for spell in player['summoner_spells']]
-        
-        print(f"階段: {match['Tab']}")
-        print(f"對戰組合: {match['MatchGroup']}")
-        print(f"比賽名稱: {match['Tournament']}")
-        print(f"是否最後一場: {match['is_last_game_in_group']}")
-        print(f"是否使用動畫: {match['use_animation']}")
-        print(f"贏方隊伍: {match['WinnerTeam']}")
-        print(f"隊伍1: {match['Team1']}")
-        print(f"隊伍2: {match['Team2']}")
-        print("---")
 
     # 寫回圖片快取
     with open(image_cache_path, "w", encoding="utf-8") as f:

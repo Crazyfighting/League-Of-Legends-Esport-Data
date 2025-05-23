@@ -356,7 +356,7 @@
                     rgba(0,123,255,0.45) 0%,
                     rgba(0,0,0,0.7) 100%
                 ), var(--team1-image);
-                background-size: cover;
+                background-size: cover, 80%;
                 background-position: center;
                 background-repeat: no-repeat;
                 border: none;
@@ -368,7 +368,7 @@
                     rgba(220,53,69,0.45) 0%,
                     rgba(0,0,0,0.7) 100%
                 ), var(--team2-image);
-                background-size: cover;
+                background-size: cover, 80%;
                 background-position: center;
                 background-repeat: no-repeat;
                 border: none;
@@ -514,7 +514,7 @@
                 rgba(0,123,255,0.45) 0%,
                 rgba(0,0,0,0.7) 100%
             ), var(--team1-image);
-            background-size: cover;
+            background-size: cover, 80%;
             background-position: center;
             background-repeat: no-repeat;
             border: none;
@@ -528,7 +528,7 @@
                 rgba(220,53,69,0.45) 0%,
                 rgba(0,0,0,0.7) 100%
             ), var(--team2-image);
-            background-size: cover;
+            background-size: cover, 80%;
             background-position: center;
             background-repeat: no-repeat;
             border: none;
@@ -1281,10 +1281,14 @@
                     {% if match.Tab == tab.Tab %}
                     <div class="table-scroll-x">
                         <div class="match-table-wrapper">
-                            <table class="match-table" style="--team1-image: url('{{ match.Team1Image }}'); --team2-image: url('{{ match.Team2Image }}');">
+                            <table class="match-table" style="--team1-image: url('{{ match.Team1Image }}'); --team2-image: url('{{ match.Team2Image }}');" data-gameid="{{ match.GameId }}">
                                 <tr>
                                     <td colspan="2" class="match-header{% if match.Tournament|length > 30 %} long-title{% endif %}">
                                         {{ match.Tournament }}
+                                        {% if match.DateTime %}
+                                            <br>
+                                            <span style="font-size: 0.8em; color: #FFD700;">{{ match.DateTime }}</span>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 <tr>
@@ -1438,6 +1442,8 @@
             setTimeout(() => {
                 if (stage === 'MainEvent') {
                     showMainEventRounds();
+                } else if (stage === 'PlayIn') {
+                    showPlayInRounds();
                 } else {
                     showMatches(stage);
                 }
@@ -1449,13 +1455,50 @@
             roundButtons.style.display = 'flex';
             roundButtons.innerHTML = '';
             
-            for (let i = 1; i <= 5; i++) {
-                const button = document.createElement('button');
-                button.className = 'round-button';
-                button.setAttribute('data-round', i);
-                button.textContent = `Round ${i}`;
-                button.onclick = () => showMainEventMatches(i);
-                roundButtons.appendChild(button);
+            // 獲取所有 MainEvent 的比賽
+            const matches = document.querySelectorAll('.tab-content');
+            const mainEventMatches = Array.from(matches).find(match => match.id.startsWith('MainEvent'));
+            
+            if (mainEventMatches) {
+                // 獲取所有比賽的 stage_format
+                const stageFormats = new Set();
+                let hasTiebreaker = false;
+                
+                mainEventMatches.querySelectorAll('.match-table').forEach(table => {
+                    const gameId = table.getAttribute('data-gameid');
+                    if (gameId) {
+                        if (gameId.toLowerCase().includes('day')) {
+                            stageFormats.add('Day');
+                        } else if (gameId.toLowerCase().includes('round')) {
+                            stageFormats.add('Round');
+                        } else if (gameId.toLowerCase().includes('tiebreaker')) {
+                            hasTiebreaker = true;
+                        }
+                    }
+                });
+
+                // 根據找到的格式決定顯示方式
+                const format = stageFormats.has('Day') ? 'Day' : 'Round';
+                const maxNumber = format === 'Day' ? 8 : 5;  // Day 最多到 8，Round 最多到 5
+
+                for (let i = 1; i <= maxNumber; i++) {
+                    const button = document.createElement('button');
+                    button.className = 'round-button';
+                    button.setAttribute('data-round', i);
+                    button.textContent = `${format} ${i}`;
+                    button.onclick = () => showMainEventMatches(i, format);
+                    roundButtons.appendChild(button);
+                }
+
+                // 如果有 Tiebreaker，添加按鈕
+                if (hasTiebreaker) {
+                    const tiebreakerButton = document.createElement('button');
+                    tiebreakerButton.className = 'round-button';
+                    tiebreakerButton.setAttribute('data-round', 'tiebreaker');
+                    tiebreakerButton.textContent = 'Tiebreaker';
+                    tiebreakerButton.onclick = () => showMainEventMatches('tiebreaker', 'Tiebreaker');
+                    roundButtons.appendChild(tiebreakerButton);
+                }
             }
             
             // 添加淡入效果
@@ -1464,7 +1507,7 @@
             }, 50);
         }
 
-        function showMainEventMatches(round) {
+        function showMainEventMatches(round, format) {
             currentRound = round;
             
             // 添加淡出效果
@@ -1474,8 +1517,17 @@
             setTimeout(() => {
                 roundButtons.style.display = 'none';
                 roundButtons.classList.remove('fade-out');
-                showMatches(`MainEvent Round ${round}`);
+                if (format === 'Tiebreaker') {
+                    showMatches('MainEvent Tiebreaker');
+                } else {
+                    showMatches(`MainEvent ${format} ${round}`);
+                }
             }, 500);
+        }
+
+        function showPlayInRounds() {
+            // 直接顯示所有 Play-in 比賽
+            showMatches('PlayIn');
         }
 
         function showMatches(stage) {
@@ -1488,24 +1540,54 @@
             matches.forEach(match => {
                 if (match.id === stage) {
                     const matchElements = match.querySelectorAll('.match-table');
-                    // 使用 Set 來追蹤已經顯示過的隊伍組合
-                    const shownMatches = new Set();
+                    // 使用 Map 來追蹤已經顯示過的隊伍組合，並記錄其系列賽資訊
+                    const shownMatches = new Map();
+                    const regularMatches = [];
+                    const tiebreakerMatches = [];
+                    const qualifyingMatches = [];
                     
                     matchElements.forEach(matchElement => {
                         const team1 = matchElement.querySelector('.team1-column .team-name').textContent.trim();
                         const team2 = matchElement.querySelector('.team2-column .team-name').textContent.trim();
                         const team1Image = matchElement.style.getPropertyValue('--team1-image').replace(/url\(['"](.+)['"]\)/, '$1');
                         const team2Image = matchElement.style.getPropertyValue('--team2-image').replace(/url\(['"](.+)['"]\)/, '$1');
+                        const header = matchElement.querySelector('.match-header').textContent;
                         
-                        // 創建標準化的隊伍組合鍵值（不考慮順序）
-                        const teams = [team1, team2].sort().join(' vs ');
+                        // 從 header 中提取日期時間
+                        const dateTimeMatch = header.match(/(\d{4}-\d{2}-\d{2})/);
+                        const dateTime = dateTimeMatch ? dateTimeMatch[1] : '';
+                        const matchDate = dateTime; // 直接使用日期
                         
-                        // 如果這個隊伍組合還沒有顯示過，創建按鈕
-                        if (!shownMatches.has(teams)) {
-                            shownMatches.add(teams);
+                        // 從 GameId 中提取 SeriesId
+                        const gameId = matchElement.getAttribute('data-gameid');
+                        let seriesId = '';
+                        if (gameId) {
+                            const parts = gameId.split('_');
+                            // 根據比賽類型決定如何提取 SeriesId
+                            if (parts[1].includes('Round') || parts[1].includes('Day')) {
+                                // Round/Day 類型：取 Round/Day 和數字
+                                seriesId = `${parts[1]}_${parts[2]}`;
+                            } else {
+                                // Qualifiers 類型：取 Qualifiers 和數字
+                                seriesId = `${parts[1]}_${parts[2]}`;
+                            }
+                        }
+                        
+                        // 只使用 SeriesId 作為唯一鍵
+                        const matchKey = seriesId;
+                        console.log('SeriesId:', seriesId,' Gameid:',gameId);
+                        
+                        // 檢查是否已經存在相同的 SeriesId
+                        const existingMatch = shownMatches.get(matchKey);
+                        
+                        if (!existingMatch ) {
+                            // 如果是新的系列賽，創建按鈕
                             const button = document.createElement('button');
                             button.className = 'match-button';
                             button.setAttribute('data-stage', stage.split(' ')[0]);
+                            button.setAttribute('data-datetime', dateTime);
+                            button.setAttribute('data-gameid', gameId);
+                            button.setAttribute('data-seriesid', seriesId);
                             
                             // 創建按鈕內容
                             button.innerHTML = `
@@ -1515,16 +1597,96 @@
                             `;
                             
                             button.onclick = () => showMatchDetails(matchElement, matchElements, stage);
-                            matchButtons.appendChild(button);
+
+                            // 根據比賽類型分類
+                            if (header.includes('Worlds Qualifying Series')) {
+                                qualifyingMatches.push(button);
+                            } else if (header.includes('Tiebreaker')) {
+                                tiebreakerMatches.push(button);
+                            } else if (gameId.includes('Play-In_Elimination')) {
+                                regularMatches.push(button);
+                            } else if (gameId.includes('Play-In_Qualifiers')) {
+                                qualifyingMatches.push(button);
+                            } else {
+                                regularMatches.push(button);
+                            }
+
+                            // 記錄這個系列賽
+                            shownMatches.set(matchKey, {
+                                dateTime: dateTime,
+                                matchDate: matchDate,
+                                header: header,
+                                button: button
+                            });
                         }
                     });
+
+                    // 直接使用後端傳來的順序添加按鈕
+                    regularMatches.forEach(button => matchButtons.appendChild(button));
+                    qualifyingMatches.forEach(button => matchButtons.appendChild(button));
+                    tiebreakerMatches.forEach(button => matchButtons.appendChild(button));
                 }
             });
 
             // 添加淡入效果
-            setTimeout(() => {
-                matchButtons.classList.add('fade-in');
-            }, 50);
+            matchButtons.classList.add('fade-in');
+            
+            // 強制滾動到頂部的函數
+            const scrollToTop = () => {
+                // 使用多種方法確保滾動到頂部
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+                window.scrollTo({
+                    top: 0,
+                    left: 0,
+                    behavior: "auto"
+                });
+
+                // 額外確保滾動到頂部
+                const scrollInterval = setInterval(() => {
+                    if (window.pageYOffset === 0) {
+                        clearInterval(scrollInterval);
+                    } else {
+                        window.scrollTo(0, 0);
+                    }
+                }, 10);
+
+                // 5秒後停止嘗試滾動
+                setTimeout(() => clearInterval(scrollInterval), 5000);
+            };
+
+            // 等待所有圖片載入完成後再滾動
+            const images = matchButtons.getElementsByTagName('img');
+            let loadedImages = 0;
+            const totalImages = images.length;
+
+            if (totalImages === 0) {
+                // 如果沒有圖片，直接滾動
+                scrollToTop();
+            } else {
+                // 監聽所有圖片載入
+                Array.from(images).forEach(img => {
+                    if (img.complete) {
+                        loadedImages++;
+                        if (loadedImages === totalImages) {
+                            // 所有圖片載入完成後，等待一小段時間再滾動
+                            setTimeout(scrollToTop, 100);
+                        }
+                    } else {
+                        img.onload = () => {
+                            loadedImages++;
+                            if (loadedImages === totalImages) {
+                                // 所有圖片載入完成後，等待一小段時間再滾動
+                                setTimeout(scrollToTop, 100);
+                            }
+                        };
+                    }
+                });
+            }
+
+            // 額外的保險：在內容渲染後再次嘗試滾動
+            setTimeout(scrollToTop, 300);
         }
 
         function showMatchDetails(matchElement, allMatches, stage) {
@@ -1546,23 +1708,44 @@
                 matchContent.style.display = 'block';
                 matchContent.classList.add('fade-in');
 
-                // 只顯示當前系列賽的比賽
-                const team1 = matchElement.querySelector('.team1-column .team-name').textContent.trim();
-                const team2 = matchElement.querySelector('.team2-column .team-name').textContent.trim();
-                
+                // 獲取當前比賽的 GameId 和 SeriesId
+                const selectedGameId = matchElement.getAttribute('data-gameid');
+                let selectedSeriesId = '';
+                if (selectedGameId) {
+                    const parts = selectedGameId.split('_');
+                    // 根據比賽類型決定如何提取 SeriesId
+                    if (parts[1].includes('Round') || parts[1].includes('Day')) {
+                        // Round/Day 類型：取 Round/Day 和數字
+                        selectedSeriesId = `${parts[1]}_${parts[2]}`;
+                    } else {
+                        // Qualifiers 類型：取 Qualifiers 和數字
+                        selectedSeriesId = `${parts[1]}_${parts[2]}`;
+                    }
+                }
+
                 // 隱藏所有比賽表格
                 matchContent.querySelectorAll('.match-table').forEach(table => {
                     table.style.display = 'none';
                 });
 
-                // 只顯示當前系列賽的比賽表格（不考慮隊伍順序）
+                // 只顯示當前系列賽的比賽表格
                 allMatches.forEach(match => {
-                    const currentTeam1 = match.querySelector('.team1-column .team-name').textContent.trim();
-                    const currentTeam2 = match.querySelector('.team2-column .team-name').textContent.trim();
-                    const currentTeams = [currentTeam1, currentTeam2].sort();
-                    const selectedTeams = [team1, team2].sort();
+                    const currentGameId = match.getAttribute('data-gameid');
+                    let currentSeriesId = '';
+                    if (currentGameId) {
+                        const parts = currentGameId.split('_');
+                        // 根據比賽類型決定如何提取 SeriesId
+                        if (parts[1].includes('Round') || parts[1].includes('Day')) {
+                            // Round/Day 類型：取 Round/Day 和數字
+                            currentSeriesId = `${parts[1]}_${parts[2]}`;
+                        } else {
+                            // Qualifiers 類型：取 Qualifiers 和數字
+                            currentSeriesId = `${parts[1]}_${parts[2]}`;
+                        }
+                    }
                     
-                    if (currentTeams.join('') === selectedTeams.join('')) {
+                    // 檢查是否為同一個系列賽
+                    if (currentSeriesId === selectedSeriesId) {
                         match.style.display = 'block';
                     }
                 });
