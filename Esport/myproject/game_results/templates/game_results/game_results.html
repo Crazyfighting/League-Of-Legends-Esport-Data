@@ -480,25 +480,31 @@
 
         .match-table {
             width: 100%;
-            border-collapse: separate;
+            max-width: 1200px;
+            margin: 0 auto;
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            overflow: hidden;
+            box-sizing: border-box;
+            border-collapse: collapse;
             border-spacing: 0;
+            table-layout: fixed;
             margin-bottom: 20px;
             background-color: rgba(26, 26, 26, 0.9);
-            border-radius: 15px;
-            overflow: hidden;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            contain: content;
         }
 
         .team1-column, .team2-column {
             width: 50%;
-            padding: 20px;
+            padding: 15px;
             position: relative;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             transition: all 0.3s ease;
             border: none;
+            box-sizing: border-box;
+            vertical-align: top;
         }
 
         .team1-column {
